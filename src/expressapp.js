@@ -147,7 +147,7 @@ export function createConfigurationApp(config) {
   return app;
 }
 
-function handleTokenRevoke(req, res, next) {
+function handleRevokeToken(req, res, next) {
   const token = req.params.token;
   res.logData.token = token;
 
@@ -202,7 +202,7 @@ export function createOAuthApp(config = {}) {
     next();
   });
   app.post('/oauth/token', app.oauth.grant());
-  app.delete('/oauth/token/:token', handleTokenRevoke);
+  app.delete('/oauth/token/:token', handleRevokeToken);
   app.delete('/oauth/tokens', handleRevokeTokensForUser);
   app.use(app.oauth.errorHandler());
 
