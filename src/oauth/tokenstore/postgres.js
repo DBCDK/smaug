@@ -85,6 +85,31 @@ class TokenStore extends MemoryTokenStore {
       });
     });
   }
+
+  /**
+   * Deletes a users accesstokens
+   * @param {String}userId
+   * @returns {Promise}
+   */
+  clearAccessTokenForUser(userId) {
+    return new Promise((resolve, reject) => {
+      this.tokens.destroy({where: {userId}})
+        .then(res => resolve({count: res}))
+        .catch(reject);
+    });
+  }
+
+  /**
+   * Revokes a single token
+   * @param {String}bearerToken
+   */
+  revokeToken(bearerToken) {
+    return new Promise((resolve, reject) => {
+      this.tokens.destroy({where: {accessToken: bearerToken}})
+        .then(res => resolve({count: res}))
+        .catch(reject);
+    });
+  }
 }
 
 

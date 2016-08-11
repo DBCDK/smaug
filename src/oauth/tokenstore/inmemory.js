@@ -65,6 +65,41 @@ class TokenStore {
       }
     });
   }
+
+  /**
+   * Deletes a users accesstokens
+   * @param {String}userId
+   * @returns {Promise}
+   */
+  clearAccessTokenForUser(userId) {
+    return new Promise((resolve) => {
+      let deleteCount = 0;
+      Object.keys(this.tokens).forEach(tokenKey => {
+        if (this.tokens[tokenKey].userId === userId) {
+          delete this.tokens[tokenKey];
+          deleteCount += 1;
+        }
+      });
+
+      resolve({count: deleteCount});
+    });
+  }
+
+  /**
+   * Revokes a single access token
+   * @param {String}token
+   * @returns {Promise}
+   */
+  revokeToken(token) {
+    return new Promise(resolve => {
+      if (this.tokens[token]) {
+        delete this.tokens[token];
+        return resolve({count: 1});
+      }
+
+      return resolve({count: 0});
+    });
+  }
 }
 
 
