@@ -74,7 +74,7 @@ class TokenStore extends MemoryTokenStore {
       }).then(tokenResponse => {
         // No token in postgres.
         if (!tokenResponse) {
-          return reject(new Error('token not found'));
+          return reject(new Error('bearerToken not found'));
         }
 
         // Get a plain token object and update the cache.
@@ -104,8 +104,10 @@ class TokenStore extends MemoryTokenStore {
    * @param {String}bearerToken
    */
   revokeToken(bearerToken) {
+    this.tokenCache.del(bearerToken);
+
     return new Promise((resolve, reject) => {
-      this.tokens.destroy({where: {accessToken: bearerToken}})
+      this.tokens.destroy({where: {id: bearerToken}})
         .then(res => resolve({count: res}))
         .catch(reject);
     });

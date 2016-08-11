@@ -131,7 +131,7 @@ class TokenStore {
       });
   }
 
-  clearAccessTokenForUser(userId) {
+  clearAccessTokenForUser() {
     return Promise.reject('Not implemented for this backend!');
   }
 
