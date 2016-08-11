@@ -71,7 +71,7 @@ class TokenStore {
    * @param {String}userId
    * @returns {Promise}
    */
-  clearAccessTokenForUser(userId) {
+  clearAccessTokensForUser(userId) {
     return new Promise((resolve) => {
       let deleteCount = 0;
       Object.keys(this.tokens).forEach(tokenKey => {

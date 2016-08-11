@@ -91,7 +91,7 @@ class TokenStore extends MemoryTokenStore {
    * @param {String}userId
    * @returns {Promise}
    */
-  clearAccessTokenForUser(userId) {
+  clearAccessTokensForUser(userId) {
     return new Promise((resolve, reject) => {
       this.tokens.destroy({where: {userId}})
         .then(res => resolve({count: res}))
