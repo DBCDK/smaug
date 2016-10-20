@@ -424,7 +424,21 @@ export function createAdminApp(config = {}) {
 
   configEndpoint.route('/')
     .get((req, res) => {
-      res.json(app.get('config'));
+      const config = Object.assign({}, app.get('config'));
+
+      if (config.datasources.postgres) {
+        delete config.datasources.postgres.models;
+      }
+
+      if (config.datasources.redis) {
+        delete config.datasources.redis.redisClient;
+      }
+
+      ['userstore', 'agencystore', 'clientstore', 'tokenstore', 'configstore'].forEach(store => {
+        delete config[store].config.backend;
+      })
+
+      res.json(config);
     });
 
   app.use('/clients', clientEndpoint);
