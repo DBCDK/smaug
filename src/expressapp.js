@@ -11,6 +11,8 @@ import _ from 'lodash';
 import url from 'url';
 import {log} from './utils';
 import Model from './oauth/twolevel.model.js';
+import uuid from 'uuid';
+
 // import throttle from './throttle/throttle.middleware.js';
 import {userEncode, userDecode} from './utils';
 
@@ -420,6 +422,19 @@ export function createAdminApp(config = {}) {
           res.json({err: err});
         });
 
+    });
+
+  clientEndpoint.route('/token/:clientId')
+    .get((req, res, next) => {
+      const tokenStore = app.get('stores').tokenStore;
+      const token = uuid().replace(/-/g, '');
+      const clientId = req.params.clientId;
+      const tokenExpiration = config.tokenExpiration || 60 * 60 * 24 * 30;
+      const expires = new Date(Date.now() + tokenExpiration*1000);
+      tokenStore.storeAccessToken(token, clientId, expires, {id: '@' + config.defaultLibraryId})
+        .then(() => tokenStore.getAccessToken(token))
+        .then(tokenInfo => res.json(tokenInfo))
+        .catch(error => next(new Error(error)));
     });
 
   configEndpoint.route('/')
