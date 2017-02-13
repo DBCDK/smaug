@@ -13,7 +13,7 @@ describe('borchk', function () {
 
   before(function () {
     userStore = new UserStore({}, {
-      wsdl: 'https://borchk.addi.dk/2.4/borchk.wsdl',
+      wsdl: 'https://borchk.addi.dk/2.5/borchk.wsdl',
       serviceRequester: 'bibliotek.dk'
     });
   });
