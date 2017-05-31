@@ -109,6 +109,7 @@ function createBasicApp(config) {
 export function createConfigurationApp(config) {
   var app = createBasicApp(config);
 
+  const usingBorchk = (config && config.userstore && config.userstore.backend === 'borchk');
   app.get('/configuration', (req, res, next) => {
     var bearerToken = req.query.token;
 
@@ -116,7 +117,8 @@ export function createConfigurationApp(config) {
 
     app.get('stores').tokenStore.getAccessToken(bearerToken)
       .then((tokenInfo) => {
-        var user = Object.assign(userDecode(tokenInfo.userId));
+        let user = Object.assign(userDecode(tokenInfo.userId));
+        user.libraryId = usingBorchk && user.libraryId.indexOf('DK-') === 0 ? user.libraryId : `DK-${user.libraryId}`;
         user.agency = user.libraryId;
         var client = {id: tokenInfo.clientId};
         return app.get('stores').configStore.get(user, client)

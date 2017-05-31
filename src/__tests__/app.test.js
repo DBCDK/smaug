@@ -55,6 +55,7 @@ describe('web app', function () {
     configStoreConfig = {
       default: {foo: 'default'},
       libraries: {
+        'DK-123456': {foo: '123456'},
         123456: {foo: '123456'}
       }
     };
@@ -162,16 +163,18 @@ describe('web app', function () {
     request(app)
       .get('/configuration?token=' + bearerToken)
       .expect(function(res) {
+        const tUser = Object.assign({}, user);
         var returnedConfig = JSON.parse(res.text);
-        user.agency = user.libraryId;
-        user.pin = password;
+        tUser.libraryId = tUser.libraryId.indexOf('DK-') === 0 ? tUser.libraryId : `DK-${tUser.libraryId}`;
+        tUser.agency = tUser.libraryId;
+        tUser.pin = password;
 
         var expected = Object.assign(
           {},
-          configStoreConfig.libraries[user.libraryId],
-          {user: user, app: {clientId: clientId}}
+          configStoreConfig.libraries[tUser.libraryId],
+          {user: tUser, app: {clientId: clientId}}
         );
-        expected.user.agency = user.libraryId;
+        expected.user.agency = tUser.libraryId;
         expected.user.pin = password;
 
         returnedConfig.should.deep.equal(expected);
