@@ -107,32 +107,33 @@ function createBasicApp(config) {
 }
 
 export function createConfigurationApp(config) {
-  var app = createBasicApp(config);
+  const app = createBasicApp(config);
 
   app.get('/configuration', (req, res, next) => {
-    var bearerToken = req.query.token;
+    const bearerToken = req.query.token;
 
     res.logData.token = bearerToken;
 
     app.get('stores').tokenStore.getAccessToken(bearerToken)
       .then((tokenInfo) => {
-        var user = Object.assign(userDecode(tokenInfo.userId));
+        let user = Object.assign(userDecode(tokenInfo.userId));
         user.agency = user.libraryId;
-        var client = {id: tokenInfo.clientId};
+        user.isil = user.libraryId.indexOf('DK-') === 0 ? user.libraryId : `DK-${user.libraryId}`;
+        const client = {id: tokenInfo.clientId};
         return app.get('stores').configStore.get(user, client)
           .then((userConfig) => {
             // merge user with existing config, to get hardcoded things like 'salt'
             user = Object.assign(userConfig.user || {}, user);
             userConfig.app = Object.assign(userConfig.app || {}, {clientId: tokenInfo.clientId});
 
-            var storePasswordsInRedisClient = app.get('storePasswordsInRedisClient');
+            const storePasswordsInRedisClient = app.get('storePasswordsInRedisClient');
             if (typeof storePasswordsInRedisClient !== 'undefined') {
               storePasswordsInRedisClient.get(tokenInfo.userId, (redisErr, redisRes) => { // eslint-disable-line no-unused-vars
                 if (redisErr) {
                   return next(createError(500, 'I\'m still a teapot', {wrappedError: redisErr}));
                 }
 
-                var insecureUser = Object.assign({}, user, {pin: redisRes});
+                const insecureUser = Object.assign({}, user, {pin: redisRes});
                 res.json(Object.assign({}, userConfig, {user: insecureUser}));
               });
             }
@@ -214,8 +215,8 @@ export function createOAuthApp(config = {}) {
       }
     }
 
-    if (typeof req.body.username != 'undefined') {
-      var clientCredentials = basicAuth(req) || {};
+    if (typeof req.body.username !== 'undefined') {
+      const clientCredentials = basicAuth(req) || {};
       const user = userDecode(req.body.username);
       req.body.username = url.format({protocol: clientCredentials.name, host: user.libraryId, auth: user.id, slashes: true});
     }
@@ -231,7 +232,7 @@ export function createOAuthApp(config = {}) {
 }
 
 export function createApp(config = {}) {
-  var app = express();
+  const app = express();
   app.disable('x-powered-by');
 
   app.use(createConfigurationApp(config));
@@ -241,7 +242,7 @@ export function createApp(config = {}) {
 }
 
 export function filterClient(client) {
-  var filteredClient = Object.assign({}, client);
+  const filteredClient = Object.assign({}, client);
   delete filteredClient.secret;
   return filteredClient; // eslint-disable-line no-undefined
 }
@@ -256,12 +257,12 @@ export function clientWithId(client, id) {
 
 
 export function createAdminApp(config = {}) {
-  var app = createBasicApp(config);
+  const app = createBasicApp(config);
   app.set('config', config);
   app.use((req, res, next) => {
-    var credentials = basicAuth(req) || {};
+    const credentials = basicAuth(req) || {};
     if (_.every([typeof credentials.name === 'string', typeof credentials.pass === 'string'])) {
-      var users = (app.get('config').admin || {}).users || {};
+      const users = (app.get('config').admin || {}).users || {};
       if (users[credentials.name] === credentials.pass) {
         res.logData.user = credentials.name;
         return next();
@@ -271,8 +272,8 @@ export function createAdminApp(config = {}) {
     return res.sendStatus(401);
   });
 
-  var clientEndpoint = express.Router();
-  var configEndpoint = express.Router();
+  const clientEndpoint = express.Router();
+  const configEndpoint = express.Router();
 
   clientEndpoint.use((req, res, next) => {
     next();
@@ -365,7 +366,7 @@ export function createAdminApp(config = {}) {
     })
     .post((req, res) => {
       // create client
-      var client = {
+      const client = {
         name: req.body.name,
         config: req.body.config,
         contact: req.body.contact
@@ -394,8 +395,8 @@ export function createAdminApp(config = {}) {
     })
     .put((req, res) => {
       // update client
-      var clientId = req.params.clientId;
-      var client = {};
+      const clientId = req.params.clientId;
+      const client = {};
 
       ['name', 'config', 'contact'].forEach(field => {
         if (req.body[field]) {

@@ -8,7 +8,7 @@ export default class DbcConfigStore extends InmemoryConfigStore {
   get(user, client) {
     return super.get(user, client)
       .then((unAugmentedConfig) => {
-        var config = lodash.cloneDeep(unAugmentedConfig);
+        const config = lodash.cloneDeep(unAugmentedConfig);
 
         if (typeof config.search === 'undefined') {
           config.search = {};
@@ -22,9 +22,9 @@ export default class DbcConfigStore extends InmemoryConfigStore {
         return new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
           return this.stores.agencyStore.get(user.libraryId)
             .then((fetchedAgency) => {
-              var overrideSearchProfile = typeof (fetchedAgency.search || {}).profile !== 'undefined';
-              var overrideDdbCmsApi = typeof (fetchedAgency.ddbcms || {}).api !== 'undefined';
-              var overrideDdbCmsPassword = typeof (fetchedAgency.ddbcms || {}).password !== 'undefined';
+              const overrideSearchProfile = typeof (fetchedAgency.search || {}).profile !== 'undefined';
+              const overrideDdbCmsApi = typeof (fetchedAgency.ddbcms || {}).api !== 'undefined';
+              const overrideDdbCmsPassword = typeof (fetchedAgency.ddbcms || {}).password !== 'undefined';
 
               if (overrideSearchProfile) {
                 config.search.profile = fetchedAgency.search.profile;
@@ -52,8 +52,8 @@ export default class DbcConfigStore extends InmemoryConfigStore {
             .then((fetchedClient) => {
               const clientConfig = Object.assign({}, fetchedClient.config);
 
-              var overrideAgency = typeof (clientConfig.search || {}).agency !== 'undefined';
-              var overrideProfile = typeof (clientConfig.search || {}).profile !== 'undefined';
+              const overrideAgency = typeof (clientConfig.search || {}).agency !== 'undefined';
+              const overrideProfile = typeof (clientConfig.search || {}).profile !== 'undefined';
 
               if (overrideAgency ? !overrideProfile : overrideProfile) { // XOR
                 return reject(new Error('both (or neither) client.search.agency and client.search.profile must be set'));
