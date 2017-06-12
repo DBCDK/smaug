@@ -3,6 +3,20 @@
 import lodash from 'lodash';
 import InmemoryConfigStore from './inmemory';
 
+function defaultsDeep(dest, defaults) {
+  if (!Array.isArray(dest) && typeof dest === 'object') {
+    Object.keys(defaults).forEach(defaultKey => {
+      if (!dest[defaultKey]) {
+        dest[defaultKey] = defaults[defaultKey];
+      }
+      else {
+        dest[defaultKey] = defaultsDeep(dest[defaultKey], defaults[defaultKey]);
+      }
+    });
+  }
+
+  return dest;
+}
 
 export default class DbcConfigStore extends InmemoryConfigStore {
   get(user, client) {
@@ -60,7 +74,7 @@ export default class DbcConfigStore extends InmemoryConfigStore {
               }
 
               return resolve(
-                lodash.defaultsDeep(clientConfig, config)
+                defaultsDeep(clientConfig, config)
               );
             })
             .catch((err) => {
