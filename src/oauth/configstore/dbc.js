@@ -4,13 +4,16 @@ import lodash from 'lodash';
 import InmemoryConfigStore from './inmemory';
 
 function defaultsDeep(dest, defaults) {
+  const skipDeepDefaults = ['attributes', 'identityProviders'];
   if (!Array.isArray(dest) && typeof dest === 'object') {
     Object.keys(defaults).forEach(defaultKey => {
       if (!dest[defaultKey]) {
         dest[defaultKey] = defaults[defaultKey];
       }
       else {
-        dest[defaultKey] = defaultsDeep(dest[defaultKey], defaults[defaultKey]);
+        if (skipDeepDefaults.indexOf(defaultKey) === -1) {
+          dest[defaultKey] = defaultsDeep(dest[defaultKey], defaults[defaultKey]);
+        }
       }
     });
   }
