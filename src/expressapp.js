@@ -124,6 +124,8 @@ export function createConfigurationApp(config) {
           .then((userConfig) => {
             // merge user with existing config, to get hardcoded things like 'salt'
             user = Object.assign(userConfig.user || {}, user);
+            console.log('tokenInfo', tokenInfo);
+            console.log('expires', tokenInfo.expires);
             userConfig.expires = tokenInfo.expires;
             userConfig.app = Object.assign(userConfig.app || {}, {clientId: tokenInfo.clientId});
 
