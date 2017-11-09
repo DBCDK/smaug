@@ -171,6 +171,7 @@ describe('web app', function () {
           configStoreConfig.libraries[user.libraryId],
           {user: user, app: {clientId: clientId}}
         );
+        expected.expires = new Date();
         expected.user.agency = user.libraryId;
         expected.user.isil = `DK-${user.libraryId}`;
         expected.user.pin = password;
