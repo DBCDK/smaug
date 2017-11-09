@@ -124,6 +124,7 @@ export function createConfigurationApp(config) {
           .then((userConfig) => {
             // merge user with existing config, to get hardcoded things like 'salt'
             user = Object.assign(userConfig.user || {}, user);
+            userConfig.expires = tokenInfo.expires;
             userConfig.app = Object.assign(userConfig.app || {}, {clientId: tokenInfo.clientId});
 
             const storePasswordsInRedisClient = app.get('storePasswordsInRedisClient');
@@ -268,7 +269,7 @@ export function createAdminApp(config = {}) {
         return next();
       }
     }
-    res.setHeader('WWW-Authenticate', 'Basic')
+    res.setHeader('WWW-Authenticate', 'Basic');
     return res.sendStatus(401);
   });
 
@@ -452,7 +453,7 @@ export function createAdminApp(config = {}) {
 
       ['userstore', 'agencystore', 'clientstore', 'tokenstore', 'configstore'].forEach(store => {
         delete config[store].config.backend;
-      })
+      });
 
       res.json(config);
     });
