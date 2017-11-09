@@ -169,9 +169,8 @@ describe('web app', function () {
         var expected = Object.assign(
           {},
           configStoreConfig.libraries[user.libraryId],
-          {user: user, app: {clientId: clientId}}
+          {user: user, app: {clientId: clientId}, expires: returnedConfig.expires}
         );
-        expected.expires = new Date();
         expected.user.agency = user.libraryId;
         expected.user.isil = `DK-${user.libraryId}`;
         expected.user.pin = password;
