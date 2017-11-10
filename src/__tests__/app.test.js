@@ -159,9 +159,11 @@ describe('web app', function () {
   });
 
   it('should return configuration when queried for it with a token', function(done) {
+    const before = new Date();
     request(app)
       .get('/configuration?token=' + bearerToken)
       .expect(function(res) {
+        const after = new Date();
         var returnedConfig = JSON.parse(res.text);
         user.agency = user.libraryId;
         user.pin = password;
@@ -175,6 +177,8 @@ describe('web app', function () {
         expected.user.isil = `DK-${user.libraryId}`;
         expected.user.pin = password;
 
+        returnedConfig.expires.should.be.aboveOrEqual(before);
+        returnedConfig.expires.should.be.belowOrEqual(after);
         returnedConfig.should.deep.equal(expected);
       })
       .expect(200, done);
