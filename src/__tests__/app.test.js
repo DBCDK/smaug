@@ -177,8 +177,8 @@ describe('web app', function () {
         expected.user.isil = `DK-${user.libraryId}`;
         expected.user.pin = password;
 
-        returnedConfig.expires.should.isAtLeast(before);
-        returnedConfig.expires.should.isAtMost(after);
+        returnedConfig.expires.isAtLeast(before);
+        returnedConfig.expires.isAtMost(after);
         returnedConfig.should.deep.equal(expected);
       })
       .expect(200, done);
