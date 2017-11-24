@@ -44,10 +44,13 @@ Get: `curl http://$smaugLocation/configuration?token=...`
 # perform health check; returns http 200 on 'ok', http 500 if not ok. Works for all types of ports.
 curl https://localhost:$PORT/health
 {
-  "clientStore": "ok",
-  "configStore": "ok",
-  "userStore": "ok",
-  "tokenStore": "ok"
+  "ok":
+  {
+    "agencyStore": { "responseTime": 1 },
+    "clientStore": { "responseTime": 16 },
+    "configStore": { "responseTime": 1 },
+    "tokenStore": { "responseTime": 16 }
+  }
 }
 ```
 
