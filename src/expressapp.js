@@ -11,7 +11,7 @@ import _ from 'lodash';
 import url from 'url';
 import {log} from './utils';
 import Model from './oauth/twolevel.model.js';
-import uuid from 'uuid';
+import adminGrant from './oauth/adminGrant';
 
 // import throttle from './throttle/throttle.middleware.js';
 import {userEncode, userDecode} from './utils';
@@ -259,6 +259,13 @@ export function clientWithId(client, id) {
 
 export function createAdminApp(config = {}) {
   const app = createBasicApp(config);
+  app.oauth = OAuth2Server({
+    model: new Model(app),
+    grants: ['password'],
+    debug: true,
+    accessTokenLifetime: config.tokenExpiration || 60 * 60 * 24 * 30 // default to 30 days
+  });
+
   app.set('config', config);
   app.use((req, res, next) => {
     const credentials = basicAuth(req) || {};
@@ -352,19 +359,28 @@ export function createAdminApp(config = {}) {
         });
 
     });
+  clientEndpoint.post('/token/:clientId', (req, res, next) => {
+    if (req.body.username === userEncode(null, null)) {
+      if (typeof config.defaultLibraryId === 'undefined') {
+        log.error('No default library id. Set config.defaultLibraryId');
+      }
+      else {
+        req.body.username += config.defaultLibraryId;
+        if (req.body.password === userEncode(null, null)) {
+          req.body.password += config.defaultLibraryId;
+        }
+      }
+    }
 
-  clientEndpoint.route('/token/:clientId')
-    .get((req, res, next) => {
-      const tokenStore = app.get('stores').tokenStore;
-      const token = uuid().replace(/-/g, '');
-      const clientId = req.params.clientId;
-      const tokenExpiration = config.tokenExpiration || 60 * 60 * 24 * 30;
-      const expires = new Date(Date.now() + tokenExpiration*1000);
-      tokenStore.storeAccessToken(token, clientId, expires, {id: '@' + config.defaultLibraryId})
-        .then(() => tokenStore.getAccessToken(token))
-        .then(tokenInfo => res.json(tokenInfo))
-        .catch(error => next(new Error(error)));
-    });
+    if (typeof req.body.username !== 'undefined') {
+      adminGrant(app, req, res, next);
+    }
+    else {
+      next();
+    }
+
+
+  });
 
   configEndpoint.route('/')
     .get((req, res) => {
