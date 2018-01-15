@@ -405,6 +405,9 @@ export function createAdminApp(config = {}) {
 
   app.use('/clients', clientEndpoint);
   app.use('/config', configEndpoint);
+  app.use(app.oauth.errorHandler());
+
+
   return app;
 }
 
