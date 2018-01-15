@@ -219,7 +219,12 @@ export function createOAuthApp(config = {}) {
     if (typeof req.body.username !== 'undefined') {
       const clientCredentials = basicAuth(req) || {};
       const user = userDecode(req.body.username);
-      req.body.username = url.format({protocol: clientCredentials.name, host: user.libraryId, auth: user.id, slashes: true});
+      req.body.username = url.format({
+        protocol: clientCredentials.name,
+        host: user.libraryId,
+        auth: user.id,
+        slashes: true
+      });
     }
 
     next();
@@ -255,7 +260,6 @@ export function filterClients(clients) {
 export function clientWithId(client, id) {
   return Object.assign({}, client, {id: id});
 }
-
 
 export function createAdminApp(config = {}) {
   const app = createBasicApp(config);
@@ -359,28 +363,26 @@ export function createAdminApp(config = {}) {
         });
 
     });
-  clientEndpoint.post('/token/:clientId', (req, res, next) => {
-    if (req.body.username === userEncode(null, null)) {
-      if (typeof config.defaultLibraryId === 'undefined') {
-        log.error('No default library id. Set config.defaultLibraryId');
-      }
-      else {
-        req.body.username += config.defaultLibraryId;
-        if (req.body.password === userEncode(null, null)) {
-          req.body.password += config.defaultLibraryId;
+  clientEndpoint.route('/token/:clientId')
+    .post((req, res, next) => {
+      if (req.body.username === userEncode(null, null)) {
+        if (typeof config.defaultLibraryId === 'undefined') {
+          log.error('No default library id. Set config.defaultLibraryId');
+        }
+        else {
+          req.body.username += config.defaultLibraryId;
+          if (req.body.password === userEncode(null, null)) {
+            req.body.password += config.defaultLibraryId;
+          }
         }
       }
-    }
-
-    if (typeof req.body.username !== 'undefined') {
-      adminGrant(app, req, res, next);
-    }
-    else {
-      next();
-    }
-
-
-  });
+      if (typeof req.body.username !== 'undefined') {
+        adminGrant(app, req, res, next);
+      }
+      else {
+        next();
+      }
+    });
 
   configEndpoint.route('/')
     .get((req, res) => {
