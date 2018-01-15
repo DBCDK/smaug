@@ -11,7 +11,7 @@ import _ from 'lodash';
 import url from 'url';
 import {log} from './utils';
 import Model from './oauth/twolevel.model.js';
-import uuid from 'uuid';
+import adminGrant from './oauth/adminGrant';
 
 // import throttle from './throttle/throttle.middleware.js';
 import {userEncode, userDecode} from './utils';
@@ -219,7 +219,12 @@ export function createOAuthApp(config = {}) {
     if (typeof req.body.username !== 'undefined') {
       const clientCredentials = basicAuth(req) || {};
       const user = userDecode(req.body.username);
-      req.body.username = url.format({protocol: clientCredentials.name, host: user.libraryId, auth: user.id, slashes: true});
+      req.body.username = url.format({
+        protocol: clientCredentials.name,
+        host: user.libraryId,
+        auth: user.id,
+        slashes: true
+      });
     }
 
     next();
@@ -256,9 +261,15 @@ export function clientWithId(client, id) {
   return Object.assign({}, client, {id: id});
 }
 
-
 export function createAdminApp(config = {}) {
   const app = createBasicApp(config);
+  app.oauth = OAuth2Server({
+    model: new Model(app),
+    grants: ['password'],
+    debug: true,
+    accessTokenLifetime: config.tokenExpiration || 60 * 60 * 24 * 30 // default to 30 days
+  });
+
   app.set('config', config);
   app.use((req, res, next) => {
     const credentials = basicAuth(req) || {};
@@ -279,79 +290,6 @@ export function createAdminApp(config = {}) {
   clientEndpoint.use((req, res, next) => {
     next();
   });
-
-  clientEndpoint.route('/add')
-    .get((req, res) => {
-      res.send(
-        `
-<!DOCTYPE html>
-<html>
-<head>
-<title>Add client to SMAUG</title>
-
-<script>
-  function addRow() {
-    var nodes = document.getElementsByClassName('contact-row');
-    var newNodeIndex = nodes.length;
-    var newNode = nodes[0].cloneNode(true);
-    // Replace all indexes!
-    newNode.innerHTML = newNode.innerHTML.replace('[0]', '[' + newNodeIndex + ']');
-    newNode.innerHTML = newNode.innerHTML.replace('[0]', '[' + newNodeIndex + ']');
-    newNode.innerHTML = newNode.innerHTML.replace('[0]', '[' + newNodeIndex + ']');
-    newNode.innerHTML = newNode.innerHTML.replace('[0]', '[' + newNodeIndex + ']');
-    document.getElementById('contacts').appendChild(newNode);
-  }
-</script>
-</head>
-<body>
-
-<form method="post">
-  <label>App name <input name="appname" required="true" /></label>
-  <label>Config json <input value="{}" name="config" required="true" /></label>
-  <p>Contacts:</p>
-  <div id="contacts">
-    <div class="contact-row">
-      <label>Role <input name="contact[0].role" /></label>
-      <label>Name <input name="contact[0].name" /></label>
-      <label>Email <input name="contact[0].email" /></label>
-      <label>Phone <input name="contact[0].phone" /></label>
-    </div>
-  </div>
-  <div><a href="#" onclick="addRow()">Add row</a></div>
-  <div><input type="submit" /></div>
-</form>
-
-</body>
-</html>
-`
-      );
-    })
-    .post((req, res) => {
-      const b = req.body;
-      const contact = {};
-
-      b.contact.forEach(bContact => {
-        contact[bContact[0]] = {
-          name: bContact[1],
-          email: bContact[2],
-          phone: bContact[3]
-        };
-      });
-
-      const client = {
-        name: b.appname,
-        config: JSON.parse(b.config),
-        contact: contact
-      };
-
-      app.get('stores').clientStore.create(client)
-        .then((persistedClient) => {
-          res.json(persistedClient);
-        })
-        .catch((err) => {
-          res.json({err: err});
-        });
-    });
 
   clientEndpoint.route('/')
     .get((req, res) => {
@@ -425,18 +363,25 @@ export function createAdminApp(config = {}) {
         });
 
     });
-
   clientEndpoint.route('/token/:clientId')
-    .get((req, res, next) => {
-      const tokenStore = app.get('stores').tokenStore;
-      const token = uuid().replace(/-/g, '');
-      const clientId = req.params.clientId;
-      const tokenExpiration = config.tokenExpiration || 60 * 60 * 24 * 30;
-      const expires = new Date(Date.now() + tokenExpiration*1000);
-      tokenStore.storeAccessToken(token, clientId, expires, {id: '@' + config.defaultLibraryId})
-        .then(() => tokenStore.getAccessToken(token))
-        .then(tokenInfo => res.json(tokenInfo))
-        .catch(error => next(new Error(error)));
+    .post((req, res, next) => {
+      if (req.body.username === userEncode(null, null)) {
+        if (typeof config.defaultLibraryId === 'undefined') {
+          log.error('No default library id. Set config.defaultLibraryId');
+        }
+        else {
+          req.body.username += config.defaultLibraryId;
+          if (req.body.password === userEncode(null, null)) {
+            req.body.password += config.defaultLibraryId;
+          }
+        }
+      }
+      if (typeof req.body.username !== 'undefined') {
+        adminGrant(app, req, res, next);
+      }
+      else {
+        next();
+      }
     });
 
   configEndpoint.route('/')
@@ -460,6 +405,9 @@ export function createAdminApp(config = {}) {
 
   app.use('/clients', clientEndpoint);
   app.use('/config', configEndpoint);
+  app.use(app.oauth.errorHandler());
+
+
   return app;
 }
 
