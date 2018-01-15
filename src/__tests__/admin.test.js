@@ -180,6 +180,23 @@ describe('admin app', function () {
         .expect(200, done);
     });
 
+    it('should return formatted error when using wrong credentials', function(done) {
+      request(app)
+        .post('/clients/token/' + clientId)
+        .auth(admin_username, admin_password)
+        .type('json')
+        .send(JSON.stringify({
+          grant_type: 'password',
+          username: username + 'foo',
+          password: password
+        }))
+        .expect((res) => {
+          res.body.should.have.property('code', 400);
+          res.body.should.have.property('error', 'invalid_client');
+        })
+        .expect(400, done);
+    });
+
     it('should delete a client', function(done) {
       request(app)
         .delete('/clients/' + clientId)

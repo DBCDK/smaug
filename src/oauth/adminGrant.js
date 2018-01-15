@@ -14,7 +14,7 @@ function AdminGrant(app, req, res, next) {
   app.oauth.model.getUser(req.body.username, req.body.password, (err, user) => {
     if (err) return next(error('server_error', false, err));
     if (!user) {
-      return next(error('invalid_grant', 'User credentials are invalid'));
+      return next(error('invalid_client', 'User credentials are invalid'));
     }
     if (user) {
       const tokenStore = app.get('stores').tokenStore;
@@ -27,7 +27,6 @@ function AdminGrant(app, req, res, next) {
           .then(tokenInfo => sendResponse(res, next, tokenInfo, tokenExpiration))
           .catch(error => next(new Error(error)));
       });
-
     }
   });
 }
