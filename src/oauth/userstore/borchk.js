@@ -46,6 +46,7 @@ export default class UserStore {
         return isAuthenticated ? {id: username} : false; // TODO: is username/cpr the right userid?
       })
       .catch((err) => {
+        log.error('borchk.getUser failed', {error: {message: err.message, stacktrace: err.stack}});
         return Promise.reject(err);
       });
   }
