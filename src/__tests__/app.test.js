@@ -103,6 +103,45 @@ describe('web app', function () {
       .expect(400, done);
   });
 
+  it('should return a token when logging in as anonymous user at library', function (done) {
+    request(app)
+      .post('/oauth/token')
+      .auth(clientId, client.secret)
+      .type('form')
+      .send({
+        grant_type: 'password',
+        username: userEncode(user.libraryId, null),
+        password: userEncode(user.libraryId, null)
+      })
+      .expect(function(res) {
+        var token = JSON.parse(res.text);
+        token.should.have.property('access_token').with.length(40);
+        token.should.have.property('expires_in');
+        token.token_type.should.equal('bearer');
+        bearerToken = token.access_token;
+      })
+      .expect(200, done);
+  });
+
+  it('should return a token when logging in as anonymous user at library with ISIL-number', function (done) {
+    request(app)
+      .post('/oauth/token')
+      .auth(clientId, client.secret)
+      .type('form')
+      .send({
+        grant_type: 'password',
+        username: userEncode('DK-' + user.libraryId, null),
+        password: userEncode('DK-' + user.libraryId, null)
+      })
+      .expect(function(res) {
+        var token = JSON.parse(res.text);
+        token.should.have.property('access_token').with.length(40);
+        token.should.have.property('expires_in');
+        token.token_type.should.equal('bearer');
+        bearerToken = token.access_token;
+      })
+      .expect(200, done);
+  });
 
   it('should return a token when logging in as anonymous', function (done) {
     request(app)
