@@ -217,6 +217,10 @@ export function createOAuthApp(config = {}) {
     }
 
     if (typeof req.body.username !== 'undefined') {
+      if(req.body.username.startsWith('@DK-')) {
+        req.body.username = req.body.username.replace('DK-', '');
+        req.body.password = String(req.body.password).replace('DK-', '');
+      }
       const clientCredentials = basicAuth(req) || {};
       const user = userDecode(req.body.username);
       req.body.username = url.format({
