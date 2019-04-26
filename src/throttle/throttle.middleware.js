@@ -9,8 +9,8 @@ import Throttler from './throttle.js';
 /**
  * The middleware will throttleRequest requests based on credentials usage.
  */
+// eslint-disable-next-line no-unused-vars
 export default function throttle(options) {
-  // eslint-disable-line no-unused-vars
   options = options || {};
 
   const throttler = new Throttler();

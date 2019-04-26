@@ -101,8 +101,8 @@ export class Model {
                 storePasswordsInRedisClient.set(
                   username,
                   password,
+                  // eslint-disable-next-line no-unused-vars
                   (err, res) => {
-                    // eslint-disable-line no-unused-vars
                     if (err) {
                       callback(new Error("I'm a teapot"), null);
                     } else {

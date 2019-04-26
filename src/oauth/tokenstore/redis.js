@@ -12,7 +12,7 @@ class TokenStore {
   }
 
   constructor(stores, config = {}) {
-    // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     // Get the redis client
     this.redisClient = config.backend.redisClient;
   }
@@ -50,7 +50,7 @@ class TokenStore {
         key,
         {clientId: clientId, userId: user.id},
         (err, res) => {
-          // eslint-disable-line no-unused-vars
+          // eslint-disable-next-line no-unused-vars
           if (err) {
             reject(err);
           } else {

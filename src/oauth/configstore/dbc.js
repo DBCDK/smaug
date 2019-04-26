@@ -40,39 +40,41 @@ export default class DbcConfigStore extends InmemoryConfigStore {
       })
       .then(config => {
         return new Promise((resolve, reject) => {
-          // eslint-disable-line no-unused-vars
-          return this.stores.agencyStore
-            .get(user.libraryId)
-            .then(fetchedAgency => {
-              const overrideSearchProfile =
-                typeof (fetchedAgency.search || {}).profile !== 'undefined';
-              const overrideDdbCmsApi =
-                typeof (fetchedAgency.ddbcms || {}).api !== 'undefined';
-              const overrideDdbCmsPassword =
-                typeof (fetchedAgency.ddbcms || {}).password !== 'undefined';
+          // eslint-disable-next-line no-unused-vars
+          return (
+            this.stores.agencyStore
+              .get(user.libraryId)
+              .then(fetchedAgency => {
+                const overrideSearchProfile =
+                  typeof (fetchedAgency.search || {}).profile !== 'undefined';
+                const overrideDdbCmsApi =
+                  typeof (fetchedAgency.ddbcms || {}).api !== 'undefined';
+                const overrideDdbCmsPassword =
+                  typeof (fetchedAgency.ddbcms || {}).password !== 'undefined';
 
-              if (overrideSearchProfile) {
-                config.search.profile = fetchedAgency.search.profile;
-              }
+                if (overrideSearchProfile) {
+                  config.search.profile = fetchedAgency.search.profile;
+                }
 
-              if (overrideDdbCmsApi && overrideDdbCmsPassword) {
-                config.services.ddbcmsapi = fetchedAgency.ddbcms.api;
-                config.app.ddbcmsapipassword = fetchedAgency.ddbcms.password;
-              } else if (overrideDdbCmsApi || overrideDdbCmsPassword) {
-                return reject(
-                  new Error(
-                    'both (or neither) agency.ddbcms.api and agency.ddbcms.password must be set'
-                  )
-                );
-              }
+                if (overrideDdbCmsApi && overrideDdbCmsPassword) {
+                  config.services.ddbcmsapi = fetchedAgency.ddbcms.api;
+                  config.app.ddbcmsapipassword = fetchedAgency.ddbcms.password;
+                } else if (overrideDdbCmsApi || overrideDdbCmsPassword) {
+                  return reject(
+                    new Error(
+                      'both (or neither) agency.ddbcms.api and agency.ddbcms.password must be set'
+                    )
+                  );
+                }
 
-              return resolve(config);
-            })
-            .catch(err => {
-              // eslint-disable-line no-unused-vars
-              // since no options are required to be set, the config can just be returned.
-              resolve(config);
-            });
+                return resolve(config);
+              })
+              // eslint-disable-next-line no-unused-vars
+              .catch(err => {
+                // since no options are required to be set, the config can just be returned.
+                resolve(config);
+              })
+          );
         });
       })
       .then(config => {

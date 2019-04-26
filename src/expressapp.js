@@ -75,8 +75,8 @@ function createBasicApp(config) {
 
     var storePromises = Object.keys(stores).map(storeId => {
       var tStart = moment();
+      // eslint-disable-next-line no-unused-vars
       return new Promise((resolve, reject) => {
-        // eslint-disable-line no-unused-vars
         stores[storeId]
           .ping()
           .then(() => {
@@ -152,8 +152,8 @@ export function createConfigurationApp(config) {
             if (typeof storePasswordsInRedisClient !== 'undefined') {
               storePasswordsInRedisClient.get(
                 tokenInfo.userId,
+                // eslint-disable-next-line no-unused-vars
                 (redisErr, redisRes) => {
-                  // eslint-disable-line no-unused-vars
                   if (redisErr) {
                     return next(
                       createError(500, "I'm still a teapot", {
