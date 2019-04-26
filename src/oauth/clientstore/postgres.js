@@ -26,7 +26,10 @@ export default class PostgresClientStore extends ClientStore {
     if (client.config && client.config.search) {
       const errors = ['agency', 'profile', 'collectionidentifiers']
         .filter(configField => {
-          if (client.config.search[configField] && typeof client.config.search[configField] !== 'string') {
+          if (
+            client.config.search[configField] &&
+            typeof client.config.search[configField] !== 'string'
+          ) {
             return true;
           }
 
@@ -48,8 +51,16 @@ export default class PostgresClientStore extends ClientStore {
     if (client.contact) {
       for (const contact in client.contact) {
         const contactKeys = Object.keys(client.contact[contact]);
-        if (!(contactKeys.includes('name') && contactKeys.includes('phone') && contactKeys.includes('email'))) {
-          return Promise.reject('All contacts must contain: name, phone, and email.');
+        if (
+          !(
+            contactKeys.includes('name') &&
+            contactKeys.includes('phone') &&
+            contactKeys.includes('email')
+          )
+        ) {
+          return Promise.reject(
+            'All contacts must contain: name, phone, and email.'
+          );
         }
       }
     }
@@ -77,22 +88,34 @@ export default class PostgresClientStore extends ClientStore {
   create(client) {
     return new Promise((resolve, reject) => {
       if (!client) {
-        return reject({errors: ['Got no client, please ensure you send all the required details.']});
+        return reject({
+          errors: [
+            'Got no client, please ensure you send all the required details.'
+          ]
+        });
       }
 
       const requiredAttributes = ['name', 'config', 'contact'];
       const errors = [];
-      errors.concat(requiredAttributes.filter(field => !client[field]).map(field => `Missing field: ${field}`));
-      errors.concat(Object.keys(client).filter(field => requiredAttributes.indexOf(field) < 0).map(field => `Illegal field: ${field}`));
+      errors.concat(
+        requiredAttributes
+          .filter(field => !client[field])
+          .map(field => `Missing field: ${field}`)
+      );
+      errors.concat(
+        Object.keys(client)
+          .filter(field => requiredAttributes.indexOf(field) < 0)
+          .map(field => `Illegal field: ${field}`)
+      );
 
       if (errors.length > 0) {
         return reject({errors});
       }
 
       return PostgresClientStore.validateClientTypes(client)
-        .then(resolve).catch(reject);
+        .then(resolve)
+        .catch(reject);
     }).then(() => {
-
       return this.clients.create(client);
     });
   }
@@ -116,17 +139,21 @@ export default class PostgresClientStore extends ClientStore {
   }
 
   getAndValidate(clientId, clientSecret) {
-    return this.get(clientId)
-      .then((client) => {
-        if (typeof client !== 'undefined' && typeof clientSecret !== 'undefined' && client.secret === clientSecret) {
-          return client;
-        }
-        return Promise.reject();
-      });
+    return this.get(clientId).then(client => {
+      if (
+        typeof client !== 'undefined' &&
+        typeof clientSecret !== 'undefined' &&
+        client.secret === clientSecret
+      ) {
+        return client;
+      }
+      return Promise.reject();
+    });
   }
 
   getAll() {
-    return this.clients.findAll()
+    return this.clients
+      .findAll()
       .then(clients => clients.map(client => client.get({plain: true})));
   }
 
@@ -134,7 +161,7 @@ export default class PostgresClientStore extends ClientStore {
     return new Promise((resolve, reject) => {
       // We need a client id
       if (typeof clientId === 'undefined') {
-        return reject('clientId can\'t be undefined');
+        return reject("clientId can't be undefined");
       }
 
       // We also need something to update with
@@ -144,26 +171,31 @@ export default class PostgresClientStore extends ClientStore {
 
       // We don't let you update the secret or the client id
       if (client.secret || (client.id && clientId !== client.id)) {
-        return reject('You cannot update a client id or secret! Create a new client instead!');
+        return reject(
+          'You cannot update a client id or secret! Create a new client instead!'
+        );
       }
 
       // And we also want to run default validations.
       return PostgresClientStore.validateClientTypes(client)
-        .then(resolve).catch(reject);
-    }).then(() => {
-      return this.clients.findByPrimary(clientId);
-    }).then(clientInstance => {
-      if (!clientInstance) {
-        return Promise.reject('Could not find client!');
-      }
+        .then(resolve)
+        .catch(reject);
+    })
+      .then(() => {
+        return this.clients.findByPrimary(clientId);
+      })
+      .then(clientInstance => {
+        if (!clientInstance) {
+          return Promise.reject('Could not find client!');
+        }
 
-      return clientInstance.update(client).then(updatedInstance => {
-        // Bust a cache!
-        this.clientCache.del(clientId);
+        return clientInstance.update(client).then(updatedInstance => {
+          // Bust a cache!
+          this.clientCache.del(clientId);
 
-        return updatedInstance.get({plain: true});
+          return updatedInstance.get({plain: true});
+        });
       });
-    });
   }
 
   delete(clientId) {

@@ -20,9 +20,14 @@ function createBasicApp(config) {
   var app = express();
   app.set('config', config);
 
-  var storePasswordsInRedisOptions = (app.get('config').whoCaresAboutSecurityAnyway || {}).storePasswordsInRedis;
+  var storePasswordsInRedisOptions = (
+    app.get('config').whoCaresAboutSecurityAnyway || {}
+  ).storePasswordsInRedis;
   if (storePasswordsInRedisOptions) {
-    app.set('storePasswordsInRedisClient', redis.createClient(storePasswordsInRedisOptions));
+    app.set(
+      'storePasswordsInRedisClient',
+      redis.createClient(storePasswordsInRedisOptions)
+    );
   }
 
   app.disable('x-powered-by');
@@ -35,8 +40,9 @@ function createBasicApp(config) {
 
     res.on('finish', () => {
       var timeEnd = moment();
-      log.info(null, Object.assign(res.logData || {},
-        {
+      log.info(
+        null,
+        Object.assign(res.logData || {}, {
           type: 'accessLog',
           request: {
             method: req.method,
@@ -47,7 +53,8 @@ function createBasicApp(config) {
           },
           response: {status: res.statusCode},
           time: {start: timeStart, end: timeEnd, taken: timeEnd.diff(timeStart)}
-        }));
+        })
+      );
     });
 
     next();
@@ -56,29 +63,33 @@ function createBasicApp(config) {
   app.use(bodyParser.urlencoded({extended: true}));
   app.use(bodyParser.json());
 
-  app.get('/', function (req, res) {
-    res.send('Smaug authentication system. Documentation: <a href="https://github.com/DBCDK/smaug#readme">https://github.com/DBCDK/smaug#readme</a>');
+  app.get('/', function(req, res) {
+    res.send(
+      'Smaug authentication system. Documentation: <a href="https://github.com/DBCDK/smaug#readme">https://github.com/DBCDK/smaug#readme</a>'
+    );
   });
 
   app.get('/health', (req, res) => {
     var result = {ok: {}};
     var stores = app.get('stores');
 
-    var storePromises = Object.keys(stores).map((storeId) => {
+    var storePromises = Object.keys(stores).map(storeId => {
       var tStart = moment();
-      return new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
-        stores[storeId].ping()
+      return new Promise((resolve, reject) => {
+        // eslint-disable-line no-unused-vars
+        stores[storeId]
+          .ping()
           .then(() => {
             resolve({responseTime: moment().diff(tStart), result: 'ok'});
           })
-          .catch((err) => {
+          .catch(err => {
             resolve({responseTime: moment().diff(tStart), result: err});
           });
       });
     });
 
-    Promise.all(storePromises).then((results) => {
-      _.zip(Object.keys(stores), results).forEach((zipElem) => {
+    Promise.all(storePromises).then(results => {
+      _.zip(Object.keys(stores), results).forEach(zipElem => {
         let [storeId, status] = zipElem;
         if (status.result instanceof Error) {
           if (typeof result.errors === 'undefined') {
@@ -90,8 +101,7 @@ function createBasicApp(config) {
             stacktrace: status.result.stack,
             responseTime: status.responseTime
           };
-        }
-        else {
+        } else {
           result.ok[storeId] = {responseTime: status.responseTime};
         }
       });
@@ -114,49 +124,77 @@ export function createConfigurationApp(config) {
 
     res.logData.token = bearerToken;
 
-    app.get('stores').tokenStore.getAccessToken(bearerToken)
-      .then((tokenInfo) => {
+    app
+      .get('stores')
+      .tokenStore.getAccessToken(bearerToken)
+      .then(tokenInfo => {
         let user = Object.assign(userDecode(tokenInfo.userId));
         user.agency = user.libraryId;
-        user.isil = user.libraryId.indexOf('DK-') === 0 ? user.libraryId : `DK-${user.libraryId}`;
+        user.isil =
+          user.libraryId.indexOf('DK-') === 0
+            ? user.libraryId
+            : `DK-${user.libraryId}`;
         const client = {id: tokenInfo.clientId};
-        return app.get('stores').configStore.get(user, client)
-          .then((userConfig) => {
+        return app
+          .get('stores')
+          .configStore.get(user, client)
+          .then(userConfig => {
             // merge user with existing config, to get hardcoded things like 'salt'
             user = Object.assign(userConfig.user || {}, user);
             userConfig.expires = tokenInfo.expires;
-            userConfig.app = Object.assign(userConfig.app || {}, {clientId: tokenInfo.clientId});
+            userConfig.app = Object.assign(userConfig.app || {}, {
+              clientId: tokenInfo.clientId
+            });
 
-            const storePasswordsInRedisClient = app.get('storePasswordsInRedisClient');
+            const storePasswordsInRedisClient = app.get(
+              'storePasswordsInRedisClient'
+            );
             if (typeof storePasswordsInRedisClient !== 'undefined') {
-              storePasswordsInRedisClient.get(tokenInfo.userId, (redisErr, redisRes) => { // eslint-disable-line no-unused-vars
-                if (redisErr) {
-                  return next(createError(500, 'I\'m still a teapot', {wrappedError: redisErr}));
-                }
+              storePasswordsInRedisClient.get(
+                tokenInfo.userId,
+                (redisErr, redisRes) => {
+                  // eslint-disable-line no-unused-vars
+                  if (redisErr) {
+                    return next(
+                      createError(500, "I'm still a teapot", {
+                        wrappedError: redisErr
+                      })
+                    );
+                  }
 
-                const insecureUser = Object.assign({}, user, {pin: redisRes});
-                res.json(Object.assign({}, userConfig, {user: insecureUser}));
-              });
-            }
-            else {
+                  const insecureUser = Object.assign({}, user, {pin: redisRes});
+                  res.json(Object.assign({}, userConfig, {user: insecureUser}));
+                }
+              );
+            } else {
               // success
               res.json(Object.assign({}, userConfig, {user: user}));
             }
           })
-          .catch((err) => {
-            log.error('Error creating configuration', {error: {message: err.message, stacktrace: err.stack}});
-            return next(createError(500, 'Error creating configuration', {wrappedError: err}));
+          .catch(err => {
+            log.error('Error creating configuration', {
+              error: {message: err.message, stacktrace: err.stack}
+            });
+            return next(
+              createError(500, 'Error creating configuration', {
+                wrappedError: err
+              })
+            );
           });
       })
-      .catch((err) => {
-        log.error('Error creating configuration', {error: {message: err.message, stacktrace: err.stack}});
+      .catch(err => {
+        log.error('Error creating configuration', {
+          error: {message: err.message, stacktrace: err.stack}
+        });
         return next(createError(404, 'Token not found', {wrappedError: err}));
       });
   });
 
   // error handler
   app.use((err, req, res, next) => {
-    log.error(err.message, {error: {message: err.message, stacktrace: err.stack}});
+    log.error(err.message, {
+      error: {message: err.message, stacktrace: err.stack}
+    });
     next();
   });
 
@@ -167,7 +205,9 @@ function handleRevokeToken(req, res, next) {
   const token = req.params.token;
   res.logData.token = token;
 
-  req.app.get('stores').tokenStore.revokeToken(token)
+  req.app
+    .get('stores')
+    .tokenStore.revokeToken(token)
     .then(response => res.json(response))
     .catch(error => next(new Error(error)));
 }
@@ -177,9 +217,12 @@ function handleRevokeTokensForUser(req, res, next) {
   const token = req.query.token;
   res.logData.token = token;
 
-  tokenStore.getAccessToken(token).then(tokenInfo => {
-    return tokenStore.clearAccessTokensForUser(tokenInfo.userId);
-  }).then(response => res.json(response))
+  tokenStore
+    .getAccessToken(token)
+    .then(tokenInfo => {
+      return tokenStore.clearAccessTokensForUser(tokenInfo.userId);
+    })
+    .then(response => res.json(response))
     .catch(error => next(new Error(error)));
 }
 
@@ -188,7 +231,10 @@ export function createOAuthApp(config = {}) {
 
   app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+    );
     next();
   });
 
@@ -207,8 +253,7 @@ export function createOAuthApp(config = {}) {
     if (req.body.username === userEncode(null, null)) {
       if (typeof config.defaultLibraryId === 'undefined') {
         log.error('No default library id. Set config.defaultLibraryId');
-      }
-      else {
+      } else {
         req.body.username += config.defaultLibraryId;
         if (req.body.password === userEncode(null, null)) {
           req.body.password += config.defaultLibraryId;
@@ -217,7 +262,7 @@ export function createOAuthApp(config = {}) {
     }
 
     if (typeof req.body.username !== 'undefined') {
-      if(req.body.username.startsWith('@DK-')) {
+      if (req.body.username.startsWith('@DK-')) {
         req.body.username = req.body.username.replace('DK-', '');
         req.body.password = String(req.body.password).replace('DK-', '');
       }
@@ -277,7 +322,12 @@ export function createAdminApp(config = {}) {
   app.set('config', config);
   app.use((req, res, next) => {
     const credentials = basicAuth(req) || {};
-    if (_.every([typeof credentials.name === 'string', typeof credentials.pass === 'string'])) {
+    if (
+      _.every([
+        typeof credentials.name === 'string',
+        typeof credentials.pass === 'string'
+      ])
+    ) {
       const users = (app.get('config').admin || {}).users || {};
       if (users[credentials.name] === credentials.pass) {
         res.logData.user = credentials.name;
@@ -295,15 +345,18 @@ export function createAdminApp(config = {}) {
     next();
   });
 
-  clientEndpoint.route('/')
+  clientEndpoint
+    .route('/')
     .get((req, res) => {
       // list clients
-      app.get('stores').clientStore.getAll()
+      app
+        .get('stores')
+        .clientStore.getAll()
         .then(filterClients)
-        .then((clients) => {
+        .then(clients => {
           res.json(clients);
         })
-        .catch((err) => {
+        .catch(err => {
           res.json({err: err});
         });
     })
@@ -315,24 +368,29 @@ export function createAdminApp(config = {}) {
         contact: req.body.contact
       };
 
-      app.get('stores').clientStore.create(client)
-        .then((persistedClient) => {
+      app
+        .get('stores')
+        .clientStore.create(client)
+        .then(persistedClient => {
           res.json(persistedClient);
         })
-        .catch((err) => {
+        .catch(err => {
           res.json({err: err});
         });
     });
 
-  clientEndpoint.route('/:clientId')
+  clientEndpoint
+    .route('/:clientId')
     .get((req, res) => {
       // get client
-      app.get('stores').clientStore.get(req.params.clientId)
+      app
+        .get('stores')
+        .clientStore.get(req.params.clientId)
         .then(filterClient)
-        .then((client) => {
+        .then(client => {
           res.json(client);
         })
-        .catch((err) => {
+        .catch(err => {
           res.json({err: err});
         });
     })
@@ -347,70 +405,74 @@ export function createAdminApp(config = {}) {
         }
       });
 
-      app.get('stores').clientStore.update(clientId, client)
+      app
+        .get('stores')
+        .clientStore.update(clientId, client)
         .then(filterClient)
-        .then((persistedClient) => {
+        .then(persistedClient => {
           res.json(persistedClient);
         })
-        .catch((err) => {
+        .catch(err => {
           res.json({err: err});
         });
     })
     .delete((req, res) => {
       // delete client
-      app.get('stores').clientStore.delete(req.params.clientId)
+      app
+        .get('stores')
+        .clientStore.delete(req.params.clientId)
         .then(() => {
           res.json({});
         })
-        .catch((err) => {
+        .catch(err => {
           res.json({err: err});
         });
-
     });
-  clientEndpoint.route('/token/:clientId')
-    .post((req, res, next) => {
-      if (req.body.username === userEncode(null, null)) {
-        if (typeof config.defaultLibraryId === 'undefined') {
-          log.error('No default library id. Set config.defaultLibraryId');
-        }
-        else {
-          req.body.username += config.defaultLibraryId;
-          if (req.body.password === userEncode(null, null)) {
-            req.body.password += config.defaultLibraryId;
-          }
+  clientEndpoint.route('/token/:clientId').post((req, res, next) => {
+    if (req.body.username === userEncode(null, null)) {
+      if (typeof config.defaultLibraryId === 'undefined') {
+        log.error('No default library id. Set config.defaultLibraryId');
+      } else {
+        req.body.username += config.defaultLibraryId;
+        if (req.body.password === userEncode(null, null)) {
+          req.body.password += config.defaultLibraryId;
         }
       }
-      if (typeof req.body.username !== 'undefined') {
-        adminGrant(app, req, res, next);
-      }
-      else {
-        next();
-      }
+    }
+    if (typeof req.body.username !== 'undefined') {
+      adminGrant(app, req, res, next);
+    } else {
+      next();
+    }
+  });
+
+  configEndpoint.route('/').get((req, res) => {
+    const config = Object.assign({}, app.get('config'));
+
+    if (config.datasources.postgres) {
+      delete config.datasources.postgres.models;
+    }
+
+    if (config.datasources.redis) {
+      delete config.datasources.redis.redisClient;
+    }
+
+    [
+      'userstore',
+      'agencystore',
+      'clientstore',
+      'tokenstore',
+      'configstore'
+    ].forEach(store => {
+      delete config[store].config.backend;
     });
 
-  configEndpoint.route('/')
-    .get((req, res) => {
-      const config = Object.assign({}, app.get('config'));
-
-      if (config.datasources.postgres) {
-        delete config.datasources.postgres.models;
-      }
-
-      if (config.datasources.redis) {
-        delete config.datasources.redis.redisClient;
-      }
-
-      ['userstore', 'agencystore', 'clientstore', 'tokenstore', 'configstore'].forEach(store => {
-        delete config[store].config.backend;
-      });
-
-      res.json(config);
-    });
+    res.json(config);
+  });
 
   app.use('/clients', clientEndpoint);
   app.use('/config', configEndpoint);
   app.use(app.oauth.errorHandler());
-
 
   return app;
 }

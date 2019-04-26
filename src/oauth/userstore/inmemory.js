@@ -15,7 +15,7 @@ export default class UserStore {
     return Promise.resolve();
   }
 
-  storeUser (username, password) {
+  storeUser(username, password) {
     const user = userDecode(username);
 
     if (typeof user.libraryId !== 'string') {
@@ -42,10 +42,12 @@ export default class UserStore {
     }
 
     var passwordOnFile = this.users[userEncode(user.libraryId, user.id)];
-    return typeof passwordOnFile === 'string' && providedPassword === passwordOnFile;
+    return (
+      typeof passwordOnFile === 'string' && providedPassword === passwordOnFile
+    );
   }
 
-  getUser (username, password) {
+  getUser(username, password) {
     const authenticated = this.isValidPassword(username, password);
 
     if (authenticated) {

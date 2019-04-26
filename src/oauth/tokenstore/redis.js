@@ -11,11 +11,11 @@ class TokenStore {
     return [];
   }
 
-  constructor(stores, config = {}) { // eslint-disable-line no-unused-vars
+  constructor(stores, config = {}) {
+    // eslint-disable-line no-unused-vars
     // Get the redis client
     this.redisClient = config.backend.redisClient;
   }
-
 
   /**
    * Ping redis
@@ -27,14 +27,12 @@ class TokenStore {
       redisClient.ping((err, res) => {
         if (err) {
           reject(err);
-        }
-        else {
+        } else {
           resolve(res);
         }
       });
     });
   }
-
 
   /**
    * Stores a set of accessToken variables in Redis
@@ -48,14 +46,18 @@ class TokenStore {
     const key = 'accessToken:' + accessToken;
 
     var promise = new Promise((resolve, reject) => {
-      redisClient.hmset(key, {clientId: clientId, userId: user.id}, (err, res) => { // eslint-disable-line no-unused-vars
-        if (err) {
-          reject(err);
+      redisClient.hmset(
+        key,
+        {clientId: clientId, userId: user.id},
+        (err, res) => {
+          // eslint-disable-line no-unused-vars
+          if (err) {
+            reject(err);
+          } else {
+            resolve(res);
+          }
         }
-        else {
-          resolve(res);
-        }
-      });
+      );
     });
 
     promise.then(() => {
@@ -63,11 +65,9 @@ class TokenStore {
         redisClient.pexpireat(key, expires.getTime(), (err, res) => {
           if (err) {
             reject(err);
-          }
-          else if (res === 0) {
+          } else if (res === 0) {
             reject(new Error('ttl for key=' + key + ' could not be set'));
-          }
-          else {
+          } else {
             resolve(res);
           }
         });
@@ -76,7 +76,6 @@ class TokenStore {
 
     return promise;
   }
-
 
   /**
    * Gets a promise that contains the token variables for a given accessToken (bearerToken)
@@ -88,33 +87,34 @@ class TokenStore {
 
     const key = 'accessToken:' + bearerToken;
     // create a promise for the command
-    const accessTokenPromise = new Promise(function (resolve, reject) {
-      redisClient.hmget(key, 'clientId', 'userId', function (err, reply) {
+    const accessTokenPromise = new Promise(function(resolve, reject) {
+      redisClient.hmget(key, 'clientId', 'userId', function(err, reply) {
         if (err !== null) {
           reject(err);
-        }
-        else if (reply[0] === null || reply[1] === null) {
+        } else if (reply[0] === null || reply[1] === null) {
           reject(new Error('bearerToken not found'));
-        }
-        else {
-          resolve({accessToken: bearerToken, clientId: reply[0], userId: reply[1]});
+        } else {
+          resolve({
+            accessToken: bearerToken,
+            clientId: reply[0],
+            userId: reply[1]
+          });
         }
       });
     });
 
-    const accessTokenTtlPromise = new Promise(function (resolve, reject) {
-      redisClient.pttl(key, function (err, reply) {
+    const accessTokenTtlPromise = new Promise(function(resolve, reject) {
+      redisClient.pttl(key, function(err, reply) {
         if (err !== null) {
           reject(err);
-        }
-        else {
+        } else {
           resolve({ttl: reply});
         }
       });
     });
 
     return Promise.all([accessTokenPromise, accessTokenTtlPromise])
-      .then((replies) => {
+      .then(replies => {
         var expires = null;
         if (replies[1].ttl !== -1) {
           expires = moment().add(replies[1].ttl, 'milliseconds');
@@ -126,7 +126,7 @@ class TokenStore {
           userId: replies[0].userId
         });
       })
-      .catch((err) => {
+      .catch(err => {
         return Promise.reject(err);
       });
   }
@@ -155,6 +155,5 @@ class TokenStore {
     });
   }
 }
-
 
 export default TokenStore;

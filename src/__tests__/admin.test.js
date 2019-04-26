@@ -12,17 +12,16 @@ import ClientStore from '../oauth/clientstore/inmemory';
 import UserStore from '../oauth/userstore/inmemory';
 import {userEncode} from '../utils';
 
-
 chai.use(chaiAsPromised);
 chai.should();
 
 function validateClient(client) {
-  ['id', 'name'].forEach((property) => {
+  ['id', 'name'].forEach(property => {
     client.should.have.property(property);
   });
 }
 
-describe('admin app', function () {
+describe('admin app', function() {
   var app = null;
   var chance = null;
   var appConfig = null;
@@ -35,12 +34,15 @@ describe('admin app', function () {
   var username;
   var password;
 
-
-  before(function () {
+  before(function() {
     chance = new Chance();
     admin_username = chance.word({length: 10});
     admin_password = chance.string();
-    client = {name: 'a-client', config: {}, contact: {owner: {name: '', phone: '', email: ''}}};
+    client = {
+      name: 'a-client',
+      config: {},
+      contact: {owner: {name: '', phone: '', email: ''}}
+    };
     user = {id: chance.word({length: 10}), libraryId: '123456'};
     username = userEncode(user.libraryId, user.id);
     password = chance.string();
@@ -66,37 +68,41 @@ describe('admin app', function () {
     stores.userStore.storeUser(username, password);
     app = createAdminApp(appConfig);
     app.set('stores', stores);
-    app.set('auth', {default: stores.userStore, allowAll: new AllowAllUserStore(), denyAll: new DenyAllUserStore()});
+    app.set('auth', {
+      default: stores.userStore,
+      allowAll: new AllowAllUserStore(),
+      denyAll: new DenyAllUserStore()
+    });
   });
 
   describe('auth', function() {
-    it('should respond with 200 on homepage without credentials', function (done) {
+    it('should respond with 200 on homepage without credentials', function(done) {
       request(app)
         .get('/')
         .expect(200, done);
     });
 
-    it('should respond with 401 on other pages without credentials', function (done) {
+    it('should respond with 401 on other pages without credentials', function(done) {
       request(app)
         .get('/foo')
         .expect(401, done);
     });
 
-    it('should respond with 401 with wrong username', function (done) {
+    it('should respond with 401 with wrong username', function(done) {
       request(app)
         .get('/clients')
         .auth(admin_username + 'foo', admin_password)
         .expect(401, done);
     });
 
-    it('should respond with 401 with wrong password', function (done) {
+    it('should respond with 401 with wrong password', function(done) {
       request(app)
         .get('/clients')
         .auth(admin_username, admin_password + 'foo')
         .expect(401, done);
     });
 
-    it('should respond with 200 with correct credentials', function (done) {
+    it('should respond with 200 with correct credentials', function(done) {
       request(app)
         .get('/clients')
         .auth(admin_username, admin_password)
@@ -111,10 +117,12 @@ describe('admin app', function () {
         .auth(admin_username, admin_password)
         .type('json')
         .send(JSON.stringify(client))
-        .expect((res) => {
+        .expect(res => {
           clientId = res.body.id;
           clientSecret = res.body.secret;
-          res.body.should.deep.equal(Object.assign({}, client, {id: clientId, secret: clientSecret}));
+          res.body.should.deep.equal(
+            Object.assign({}, client, {id: clientId, secret: clientSecret})
+          );
         })
         .expect(200, done);
     });
@@ -126,8 +134,10 @@ describe('admin app', function () {
         .auth(admin_username, admin_password)
         .type('json')
         .send(JSON.stringify(client))
-        .expect((res) => {
-          res.body.should.deep.equal(clientWithId(filterClient(client), clientId));
+        .expect(res => {
+          res.body.should.deep.equal(
+            clientWithId(filterClient(client), clientId)
+          );
         })
         .expect(200, done);
     });
@@ -136,10 +146,12 @@ describe('admin app', function () {
       request(app)
         .get('/clients/' + clientId)
         .auth(admin_username, admin_password)
-        .expect((res) => {
+        .expect(res => {
           res.body.should.have.property('id', clientId);
           res.body.should.have.property('name', client.name);
-          res.body.should.deep.equal(clientWithId(filterClient(client), clientId));
+          res.body.should.deep.equal(
+            clientWithId(filterClient(client), clientId)
+          );
         })
         .expect(200, done);
     });
@@ -149,12 +161,14 @@ describe('admin app', function () {
         .post('/clients/token/' + clientId)
         .auth(admin_username, admin_password)
         .type('json')
-        .send(JSON.stringify({
-          grant_type: 'password',
-          username: '@',
-          password: '@'
-        }))
-        .expect((res) => {
+        .send(
+          JSON.stringify({
+            grant_type: 'password',
+            username: '@',
+            password: '@'
+          })
+        )
+        .expect(res => {
           res.body.should.have.property('token_type');
           res.body.should.have.property('access_token');
           res.body.should.have.property('expires_in');
@@ -167,12 +181,14 @@ describe('admin app', function () {
         .post('/clients/token/' + clientId)
         .auth(admin_username, admin_password)
         .type('json')
-        .send(JSON.stringify({
-          grant_type: 'password',
-          username: username,
-          password: password
-        }))
-        .expect((res) => {
+        .send(
+          JSON.stringify({
+            grant_type: 'password',
+            username: username,
+            password: password
+          })
+        )
+        .expect(res => {
           res.body.should.have.property('token_type');
           res.body.should.have.property('access_token');
           res.body.should.have.property('expires_in');
@@ -185,12 +201,14 @@ describe('admin app', function () {
         .post('/clients/token/' + clientId)
         .auth(admin_username, admin_password)
         .type('json')
-        .send(JSON.stringify({
-          grant_type: 'password',
-          username: username + 'foo',
-          password: password
-        }))
-        .expect((res) => {
+        .send(
+          JSON.stringify({
+            grant_type: 'password',
+            username: username + 'foo',
+            password: password
+          })
+        )
+        .expect(res => {
           res.body.should.have.property('code', 400);
           res.body.should.have.property('error', 'invalid_client');
         })
@@ -208,9 +226,9 @@ describe('admin app', function () {
       request(app)
         .get('/clients')
         .auth(admin_username, admin_password)
-        .expect((res) => {
+        .expect(res => {
           res.body.should.have.lengthOf(1);
-          res.body.forEach((returnedClient) => {
+          res.body.forEach(returnedClient => {
             validateClient(returnedClient);
           });
         })

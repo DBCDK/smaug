@@ -10,7 +10,12 @@ import url from 'url';
 
 function AdminGrant(app, req, res, next) {
   const user = userDecode(req.body.username);
-  req.body.username = url.format({protocol: req.params.clientId, host: user.libraryId, auth: user.id, slashes: true});
+  req.body.username = url.format({
+    protocol: req.params.clientId,
+    host: user.libraryId,
+    auth: user.id,
+    slashes: true
+  });
   app.oauth.model.getUser(req.body.username, req.body.password, (err, user) => {
     if (err) return next(error('server_error', false, err));
     if (!user) {
@@ -20,11 +25,15 @@ function AdminGrant(app, req, res, next) {
       const tokenStore = app.get('stores').tokenStore;
       generateToken(app.oauth, 'accessToken', (err, token) => {
         const clientId = req.params.clientId;
-        const tokenExpiration = app.oauth.accessTokenLifetime || 60 * 60 * 24 * 30;
+        const tokenExpiration =
+          app.oauth.accessTokenLifetime || 60 * 60 * 24 * 30;
         const expires = new Date(Date.now() + tokenExpiration * 1000);
-        tokenStore.storeAccessToken(token, clientId, expires, user)
+        tokenStore
+          .storeAccessToken(token, clientId, expires, user)
           .then(() => tokenStore.getAccessToken(token))
-          .then(tokenInfo => sendResponse(res, next, tokenInfo, tokenExpiration))
+          .then(tokenInfo =>
+            sendResponse(res, next, tokenInfo, tokenExpiration)
+          )
           .catch(error => next(new Error(error)));
       });
     }
@@ -47,7 +56,7 @@ function sendResponse(res, next, tokenInfo, expires_in) {
     response.expires_in = expires_in;
   }
 
-  res.set({'Cache-Control': 'no-store', 'Pragma': 'no-cache'});
+  res.set({'Cache-Control': 'no-store', Pragma: 'no-cache'});
   res.jsonp(response);
   next();
 }
