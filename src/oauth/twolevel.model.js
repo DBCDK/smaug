@@ -97,6 +97,8 @@ export class Model {
           .getUser(username, password)
           .then(user => {
             if (user) {
+              // TODO fetch unique id here
+
               if (typeof storePasswordsInRedisClient !== 'undefined') {
                 storePasswordsInRedisClient.set(
                   username,

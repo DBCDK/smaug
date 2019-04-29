@@ -11,8 +11,8 @@ class TokenStore {
     return [];
   }
 
+  // eslint-disable-next-line no-unused-vars
   constructor(stores, config = {}) {
-    // eslint-disable-next-line no-unused-vars
     // Get the redis client
     this.redisClient = config.backend.redisClient;
   }
@@ -48,9 +48,8 @@ class TokenStore {
     var promise = new Promise((resolve, reject) => {
       redisClient.hmset(
         key,
-        {clientId: clientId, userId: user.id},
+        {clientId: clientId, userId: user.id, uniqueId: user.uniqueId},
         (err, res) => {
-          // eslint-disable-next-line no-unused-vars
           if (err) {
             reject(err);
           } else {
@@ -88,7 +87,10 @@ class TokenStore {
     const key = 'accessToken:' + bearerToken;
     // create a promise for the command
     const accessTokenPromise = new Promise(function(resolve, reject) {
-      redisClient.hmget(key, 'clientId', 'userId', function(err, reply) {
+      redisClient.hmget(key, 'clientId', 'userId', 'uniqueId', function(
+        err,
+        reply
+      ) {
         if (err !== null) {
           reject(err);
         } else if (reply[0] === null || reply[1] === null) {
@@ -97,7 +99,8 @@ class TokenStore {
           resolve({
             accessToken: bearerToken,
             clientId: reply[0],
-            userId: reply[1]
+            userId: reply[1],
+            uniqueId: reply[2]
           });
         }
       });
@@ -123,7 +126,8 @@ class TokenStore {
           accessToken: replies[0].accessToken,
           clientId: replies[0].clientId,
           expires: expires.toDate(),
-          userId: replies[0].userId
+          userId: replies[0].userId,
+          uniqueId: replies[0].uniqueId
         });
       })
       .catch(err => {

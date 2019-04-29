@@ -9,6 +9,7 @@ module.exports = function(sequelize, DataTypes) {
       },
       clientId: DataTypes.UUID,
       userId: DataTypes.TEXT,
+      uniqueId: DataTypes.TEXT,
       expires: DataTypes.DATE
     },
     {
