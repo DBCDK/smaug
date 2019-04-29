@@ -48,6 +48,8 @@ describe('admin app', function() {
     password = chance.string();
 
     appConfig = {
+      culr: {},
+      mock_externals: {culr: '1'},
       admin: {
         users: {}
       }

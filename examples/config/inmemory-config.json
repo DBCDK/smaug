@@ -1,4 +1,13 @@
 {
+  "culr": {
+    "uri": "",
+    "userIdAut": "",
+    "groupIdAut": "",
+    "passwordAut": ""
+  },
+  "mock_externals":{
+    "culr": 1
+  },
   "admin": {
     "users": {
       "admin": "password"

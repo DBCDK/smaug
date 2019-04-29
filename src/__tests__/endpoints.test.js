@@ -27,6 +27,8 @@ var user = {id: chance.word({length: 10}), libraryId: '123456'};
 var username = userEncode(user.libraryId, user.id);
 var password = chance.string();
 var appConfig = {
+  culr: {},
+  mock_externals: {culr: '1'},
   defaultLibraryId: '000000'
 };
 var adminAppConfig = {

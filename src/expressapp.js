@@ -12,11 +12,13 @@ import url from 'url';
 import {log} from './utils';
 import Model from './oauth/twolevel.model.js';
 import adminGrant from './oauth/adminGrant';
+import * as culr from './lib/culr/culr.client';
 
 // import throttle from './throttle/throttle.middleware.js';
 import {userEncode, userDecode} from './utils';
 
 function createBasicApp(config) {
+  culr.setConfig(config);
   var app = express();
   app.set('config', config);
 
@@ -152,7 +154,6 @@ export function createConfigurationApp(config) {
             if (typeof storePasswordsInRedisClient !== 'undefined') {
               storePasswordsInRedisClient.get(
                 tokenInfo.userId,
-                // eslint-disable-next-line no-unused-vars
                 (redisErr, redisRes) => {
                   if (redisErr) {
                     return next(
@@ -299,7 +300,7 @@ export function createApp(config = {}) {
 export function filterClient(client) {
   const filteredClient = Object.assign({}, client);
   delete filteredClient.secret;
-  return filteredClient; // eslint-disable-line no-undefined
+  return filteredClient;
 }
 
 export function filterClients(clients) {

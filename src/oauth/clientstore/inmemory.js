@@ -24,7 +24,7 @@ export default class ClientStore {
   }
 
   get(clientId) {
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-line no-unused-vars
     var client = this.clients[clientId];
 
     if (typeof client === 'undefined') {

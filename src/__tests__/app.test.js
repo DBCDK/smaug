@@ -53,6 +53,8 @@ describe('web app', function() {
     username = userEncode(user.libraryId, user.id);
     password = chance.string();
     appConfig = {
+      culr: {},
+      mock_externals: {culr: '1'},
       defaultLibraryId: '000000',
       whoCaresAboutSecurityAnyway: {
         storePasswordsInRedis: {
