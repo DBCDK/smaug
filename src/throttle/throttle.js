@@ -7,7 +7,6 @@ import redis from 'redis';
  */
 
 class Throttler {
-
   constructor() {
     this.redisClient = redis.createClient();
   }
@@ -18,18 +17,16 @@ class Throttler {
    * @returns {Promise}
    */
   isUserBanned(username) {
-
     const redisClient = this.redisClient;
 
     const key = this.createUserKey(username);
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       redisClient.get(key, (err, reply) => {
-        if (typeof reply === 'undefined' || (reply <= 5)) {
+        if (typeof reply === 'undefined' || reply <= 5) {
           // username is not banned
           resolve(false);
-        }
-        else {
+        } else {
           // username is banned
           resolve(true);
         }
@@ -49,7 +46,10 @@ class Throttler {
     const key = this.createUserKey(username);
 
     // increment counter for key and add TTL
-    multi.incr(key).expire(key, 60*30).exec(() => {});
+    multi
+      .incr(key)
+      .expire(key, 60 * 30)
+      .exec(() => {});
   }
 
   createUserKey(username) {

@@ -4,7 +4,6 @@ import {hostname} from 'os';
 import process from 'process';
 import {name, version} from '../package.json';
 
-
 /**
  * @returns current log level
  */
@@ -48,7 +47,7 @@ function doLog(level, msg, args) {
   }
 
   var blob = {
-    '@timestamp': (new Date()).toISOString(),
+    '@timestamp': new Date().toISOString(),
     '@version': 1,
     app: name,
     version: version,
@@ -72,18 +71,23 @@ export const log = {
   debug: (msg, args) => doLog('debug', msg, args)
 };
 
-
 export function userEncode(libraryId, userId) {
   libraryId = libraryId || '';
   userId = userId || '';
 
   if (typeof libraryId !== 'string') {
-    log.error('libraryId should be of type string, got ' + typeof libraryId, {libraryId: libraryId, userId: userId});
+    log.error('libraryId should be of type string, got ' + typeof libraryId, {
+      libraryId: libraryId,
+      userId: userId
+    });
     return null;
   }
 
   if (typeof userId !== 'string') {
-    log.error('userId should be of type string, got ' + typeof userId, {libraryId: libraryId, userId: userId});
+    log.error('userId should be of type string, got ' + typeof userId, {
+      libraryId: libraryId,
+      userId: userId
+    });
     return null;
   }
 
@@ -93,7 +97,7 @@ export function userEncode(libraryId, userId) {
 export function userDecode(username) {
   var splitPoint = username.lastIndexOf('@');
   var userId = username.substring(0, splitPoint);
-  var libraryId = username.substring(splitPoint+1, username.length);
+  var libraryId = username.substring(splitPoint + 1, username.length);
   var user = {libraryId: libraryId};
 
   if (userId) {

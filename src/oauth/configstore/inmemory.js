@@ -18,7 +18,11 @@ export default class ConfigurationStore {
 
   get(user, client) {
     var encodedUser = userEncode(user.libraryId, user.id);
-    var config = (this.config.users || {})[encodedUser] || (this.config.libraries || {})[user.libraryId] || (this.config.clients || {})[client.id] || this.config.default;
+    var config =
+      (this.config.users || {})[encodedUser] ||
+      (this.config.libraries || {})[user.libraryId] ||
+      (this.config.clients || {})[client.id] ||
+      this.config.default;
     return Promise.resolve(config);
   }
 }

@@ -4,7 +4,11 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Chance from 'chance';
 import request from 'supertest';
-import {createAdminApp, createConfigurationApp, createOAuthApp} from '../expressapp';
+import {
+  createAdminApp,
+  createConfigurationApp,
+  createOAuthApp
+} from '../expressapp';
 import TokenStore from '../oauth/tokenstore/inmemory';
 import UserStore from '../oauth/userstore/inmemory';
 import ConfigStore from '../oauth/configstore/inmemory';
@@ -80,12 +84,12 @@ var endpointTests = {
   oauth: {'/token/auth': []}
 };
 
-Object.keys(apps).forEach(function (appId) {
+Object.keys(apps).forEach(function(appId) {
   describe('cross-app endpoint contamination tests: ' + appId, function() {
     var otherApps = Object.assign({}, apps);
     delete otherApps[appId];
 
-    Object.keys(otherApps).forEach(function (otherAppId) {
+    Object.keys(otherApps).forEach(function(otherAppId) {
       describe('testing endpoints from: ' + otherAppId, function() {
         Object.keys(endpointTests[otherAppId]).forEach(function(endpointId) {
           endpointTests[otherAppId][endpointId].forEach(function(test) {

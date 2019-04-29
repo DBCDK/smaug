@@ -12,14 +12,12 @@ class TokenStore {
     this.tokens = config.tokens || {};
   }
 
-
   /**
    * Ping backend.
    */
   ping() {
     return Promise.resolve();
   }
-
 
   /**
    * Stores a set of accessToken
@@ -34,11 +32,11 @@ class TokenStore {
     tokens[accessToken] = {
       clientId: clientId,
       userId: user.id,
-      expires: expires.toISOString()};
+      expires: expires.toISOString()
+    };
 
     return Promise.resolve();
   }
-
 
   /**
    * Gets a promise that contains the token variables for a given accessToken (bearerToken)
@@ -48,7 +46,7 @@ class TokenStore {
   getAccessToken(bearerToken) {
     const tokens = this.tokens;
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       var result = tokens[bearerToken];
       if (typeof result === 'undefined') {
         reject(new Error('bearerToken not found'));
@@ -56,11 +54,10 @@ class TokenStore {
 
       result.expires = moment(result.expires).toDate();
 
-      if (result.expires > (new Date())) {
+      if (result.expires > new Date()) {
         result.accessToken = bearerToken;
         resolve(result);
-      }
-      else {
+      } else {
         reject(new Error('token expired'));
       }
     });
@@ -72,7 +69,7 @@ class TokenStore {
    * @returns {Promise}
    */
   clearAccessTokensForUser(userId) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       let deleteCount = 0;
       Object.keys(this.tokens).forEach(tokenKey => {
         if (this.tokens[tokenKey].userId === userId) {
@@ -101,6 +98,5 @@ class TokenStore {
     });
   }
 }
-
 
 export default TokenStore;

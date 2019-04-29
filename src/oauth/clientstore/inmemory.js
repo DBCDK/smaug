@@ -17,10 +17,14 @@ export default class ClientStore {
   }
 
   create(client) {
-    return this.update(uuid.v4(), Object.assign(client, {secret: randomBytes(32).toString('hex')}));
+    return this.update(
+      uuid.v4(),
+      Object.assign(client, {secret: randomBytes(32).toString('hex')})
+    );
   }
 
-  get(clientId) { // eslint-disable-line no-unused-vars
+  get(clientId) {
+    // eslint-disable-next-line no-unused-vars
     var client = this.clients[clientId];
 
     if (typeof client === 'undefined') {
@@ -30,17 +34,20 @@ export default class ClientStore {
   }
 
   getAndValidate(clientId, clientSecret) {
-    return this.get(clientId)
-      .then((client) => {
-        if (typeof client !== 'undefined' && typeof clientSecret !== 'undefined' && client.secret === clientSecret) {
-          return client;
-        }
-        return Promise.reject();
-      });
+    return this.get(clientId).then(client => {
+      if (
+        typeof client !== 'undefined' &&
+        typeof clientSecret !== 'undefined' &&
+        client.secret === clientSecret
+      ) {
+        return client;
+      }
+      return Promise.reject();
+    });
   }
 
   getAll() {
-    var clients = Object.keys(this.clients).map((clientId) => {
+    var clients = Object.keys(this.clients).map(clientId => {
       return Object.assign({}, this.clients[clientId], {id: clientId});
     });
 
@@ -49,7 +56,7 @@ export default class ClientStore {
 
   update(clientId, client) {
     if (typeof clientId === 'undefined') {
-      return Promise.reject(new Error('clientId can\'t be undefined'));
+      return Promise.reject(new Error("clientId can't be undefined"));
     }
     this.clients[clientId] = client;
     return this.get(clientId);

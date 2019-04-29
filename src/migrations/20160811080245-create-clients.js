@@ -33,7 +33,8 @@ module.exports = {
       }
     });
   },
-  down: function(queryInterface, Sequelize) { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  down: function(queryInterface, Sequelize) {
     return queryInterface.dropTable('clients');
   }
 };

@@ -66,23 +66,25 @@ class TokenStore extends MemoryTokenStore {
       }
 
       // No valid token was cached, check postgres
-      this.tokens.findOne({
-        where: {
-          id: bearerToken,
-          expires: {$gte: now.toISOString()}
-        }
-      }).then(tokenResponse => {
-        // No token in postgres.
-        if (!tokenResponse) {
-          return reject(new Error('bearerToken not found'));
-        }
+      this.tokens
+        .findOne({
+          where: {
+            id: bearerToken,
+            expires: {$gte: now.toISOString()}
+          }
+        })
+        .then(tokenResponse => {
+          // No token in postgres.
+          if (!tokenResponse) {
+            return reject(new Error('bearerToken not found'));
+          }
 
-        // Get a plain token object and update the cache.
-        const token = tokenResponse.get({plain: true});
-        token.accessToken = token.id;
-        this.tokenCache.set(bearerToken, token);
-        return resolve(token);
-      });
+          // Get a plain token object and update the cache.
+          const token = tokenResponse.get({plain: true});
+          token.accessToken = token.id;
+          this.tokenCache.set(bearerToken, token);
+          return resolve(token);
+        });
     });
   }
 
@@ -93,7 +95,8 @@ class TokenStore extends MemoryTokenStore {
    */
   clearAccessTokensForUser(userId) {
     return new Promise((resolve, reject) => {
-      this.tokens.destroy({where: {userId}})
+      this.tokens
+        .destroy({where: {userId}})
         .then(res => resolve({count: res}))
         .catch(reject);
     });
@@ -107,12 +110,12 @@ class TokenStore extends MemoryTokenStore {
     this.tokenCache.del(bearerToken);
 
     return new Promise((resolve, reject) => {
-      this.tokens.destroy({where: {id: bearerToken}})
+      this.tokens
+        .destroy({where: {id: bearerToken}})
         .then(res => resolve({count: res}))
         .catch(reject);
     });
   }
 }
-
 
 export default TokenStore;

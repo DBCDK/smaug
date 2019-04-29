@@ -18,7 +18,8 @@ export default class UserStore {
   ping() {
     var ad = this.ad;
     return new Promise((resolve, reject) => {
-      ad.find('uid=*', (err, results) => { // eslint-disable-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
+      ad.find('uid=*', (err, results) => {
         if (err) {
           return reject(err);
         }
@@ -28,10 +29,12 @@ export default class UserStore {
     });
   }
 
-  getUser (username, password) {
+  getUser(username, password) {
     var ad = this.ad;
-    return new Promise((resolve, reject) => { // eslint-disable-line no-unused-vars
-      ad.authenticate(username, password, (err, results) => { // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
+    return new Promise((resolve, reject) => {
+      // eslint-disable-next-line no-unused-vars
+      ad.authenticate(username, password, (err, results) => {
         if (err) {
           return resolve(false);
         }

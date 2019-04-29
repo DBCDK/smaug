@@ -4,19 +4,18 @@ export default class UserStore {
   static requiredOptions() {
     return [];
   }
-
-  constructor(stores, config) { // eslint-disable-line no-unused-vars
-  }
+  // eslint-disable-next-line no-unused-vars
+  constructor(stores, config) {}
 
   ping() {
     return Promise.resolve();
   }
-
-  storeUser (username, password) { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  storeUser(username, password) {
     return Promise.resolve();
   }
-
-  getUser (username, password) { // eslint-disable-line no-unused-vars
+  // eslint-disable-next-line no-unused-vars
+  getUser(username, password) {
     return Promise.resolve({id: username});
   }
 }

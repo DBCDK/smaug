@@ -13,7 +13,8 @@ export default class AgencyStore {
     return Promise.resolve();
   }
 
-  get(agencyId) { // eslint-disable-line no-unused-vars
+  get(agencyId) {
+    // eslint-disable-next-line no-unused-vars
     var agency = this.agencies[agencyId];
 
     if (typeof agency === 'undefined') {

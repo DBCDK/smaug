@@ -16,7 +16,7 @@ import {userEncode} from '../utils';
 chai.use(chaiAsPromised);
 chai.should();
 
-describe('web app', function () {
+describe('web app', function() {
   var app = null;
   var chance = null;
   var clientId = null;
@@ -33,14 +33,22 @@ describe('web app', function () {
   var bearerToken = null;
   var stores = {};
 
-  before(function () {
+  before(function() {
     chance = new Chance();
     clientId = chance.word({length: 10});
     clientId2 = chance.word({length: 10});
     clientId3 = chance.word({length: 10});
     client = {name: chance.word({length: 10}), secret: chance.string()};
-    client2 = {name: chance.word({length: 10}), secret: chance.string(), auth: 'allowAll'};
-    client3 = {name: chance.word({length: 10}), secret: chance.string(), auth: 'denyAll'};
+    client2 = {
+      name: chance.word({length: 10}),
+      secret: chance.string(),
+      auth: 'allowAll'
+    };
+    client3 = {
+      name: chance.word({length: 10}),
+      secret: chance.string(),
+      auth: 'denyAll'
+    };
     user = {id: chance.word({length: 10}), libraryId: '123456'};
     username = userEncode(user.libraryId, user.id);
     password = chance.string();
@@ -69,16 +77,20 @@ describe('web app', function () {
     stores.clientStore.update(clientId3, client3);
     app = createApp(appConfig);
     app.set('stores', stores);
-    app.set('auth', {default: defaultUserStore, allowAll: new AllowAllUserStore(), denyAll: new DenyAllUserStore()});
+    app.set('auth', {
+      default: defaultUserStore,
+      allowAll: new AllowAllUserStore(),
+      denyAll: new DenyAllUserStore()
+    });
   });
 
-  it('should respond with 200 on /', function (done) {
+  it('should respond with 200 on /', function(done) {
     request(app)
       .get('/')
       .expect(200, done);
   });
 
-  it('should fail when logging in with client credentials', function (done) {
+  it('should fail when logging in with client credentials', function(done) {
     request(app)
       .post('/oauth/token')
       .type('form')
@@ -90,7 +102,7 @@ describe('web app', function () {
       .expect(400, done);
   });
 
-  it('should return an error when requesting a token with invalid client credentials', function (done) {
+  it('should return an error when requesting a token with invalid client credentials', function(done) {
     request(app)
       .post('/oauth/token')
       .auth('invalid', 'invalid')
@@ -103,7 +115,7 @@ describe('web app', function () {
       .expect(400, done);
   });
 
-  it('should return a token when logging in as anonymous user at library', function (done) {
+  it('should return a token when logging in as anonymous user at library', function(done) {
     request(app)
       .post('/oauth/token')
       .auth(clientId, client.secret)
@@ -123,7 +135,7 @@ describe('web app', function () {
       .expect(200, done);
   });
 
-  it('should return a token when logging in as anonymous user at library with ISIL-number', function (done) {
+  it('should return a token when logging in as anonymous user at library with ISIL-number', function(done) {
     request(app)
       .post('/oauth/token')
       .auth(clientId, client.secret)
@@ -143,7 +155,7 @@ describe('web app', function () {
       .expect(200, done);
   });
 
-  it('should return a token when logging in as anonymous', function (done) {
+  it('should return a token when logging in as anonymous', function(done) {
     request(app)
       .post('/oauth/token')
       .auth(clientId, client.secret)
@@ -163,7 +175,7 @@ describe('web app', function () {
       .expect(200, done);
   });
 
-  it('should return a token when logging in with password', function (done) {
+  it('should return a token when logging in with password', function(done) {
     request(app)
       .post('/oauth/token')
       .auth(clientId, client.secret)
@@ -183,7 +195,7 @@ describe('web app', function () {
       .expect(200, done);
   });
 
-  it('should not return a token when given an invalid password', function (done) {
+  it('should not return a token when given an invalid password', function(done) {
     request(app)
       .post('/oauth/token')
       .auth(clientId, client.secret)
@@ -208,7 +220,11 @@ describe('web app', function () {
         var expected = Object.assign(
           {},
           configStoreConfig.libraries[user.libraryId],
-          {user: user, app: {clientId: clientId}, expires: returnedConfig.expires}
+          {
+            user: user,
+            app: {clientId: clientId},
+            expires: returnedConfig.expires
+          }
         );
         expected.user.agency = user.libraryId;
         expected.user.isil = `DK-${user.libraryId}`;

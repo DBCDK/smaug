@@ -8,17 +8,20 @@ import {userEncode} from '../../../utils';
 chai.use(chaiAsPromised);
 chai.should();
 
-describe('borchk', function () {
+describe('borchk', function() {
   var userStore = null;
 
-  before(function () {
-    userStore = new UserStore({}, {
-      wsdl: 'https://borchk.addi.dk/2.5/?wsdl',
-      serviceRequester: 'bibliotek.dk'
-    });
+  before(function() {
+    userStore = new UserStore(
+      {},
+      {
+        wsdl: 'https://borchk.addi.dk/2.5/?wsdl',
+        serviceRequester: 'bibliotek.dk'
+      }
+    );
   });
 
-  xit('should succeed with anonymous credentials', function () {
+  xit('should succeed with anonymous credentials', function() {
     var username = userEncode('716500', null);
     var password = username;
     var user = userStore.getUser(username, password);
@@ -29,7 +32,7 @@ describe('borchk', function () {
     ]);
   });
 
-  it('should fail with anonymous credentials and wrong password', function () {
+  it('should fail with anonymous credentials and wrong password', function() {
     var username = userEncode('716500', null);
     var password = 'wrong-password';
     var user = userStore.getUser(username, password);
@@ -37,7 +40,7 @@ describe('borchk', function () {
     return user.should.eventually.equal(false);
   });
 
-  it('should fail with invalid credentials', function () {
+  it('should fail with invalid credentials', function() {
     var username = 'invalid-username';
     var password = 'wrong-password';
     var user = userStore.getUser(username, password);

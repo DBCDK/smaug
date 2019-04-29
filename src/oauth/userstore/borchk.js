@@ -23,7 +23,7 @@ export default class UserStore {
     return Promise.resolve();
   }
 
-  getUser (username, password) {
+  getUser(username, password) {
     log.info('borchk.getUser', {user: username});
 
     var user = userDecode(username);
@@ -35,18 +35,28 @@ export default class UserStore {
       libraryCode: 'DK-' + user.libraryId
     };
 
-    return this.borchkClient.getBorrowerCheckResult(borchkRequest)
-      .then((reply) => {
+    return this.borchkClient
+      .getBorrowerCheckResult(borchkRequest)
+      .then(reply => {
         const actualUserAuthenticated = reply.requestStatus === 'ok';
         const imaginaryUserAuthenticated =
-          (reply.requestStatus === 'borrower_not_found' || reply.requestStatus === 'borrowercheck_not_allowed')
-          && typeof user.id === 'undefined' && typeof username === 'string' && username === password;
-        const isAuthenticated = actualUserAuthenticated || imaginaryUserAuthenticated;
-        log.info('borchk.getUser', {user: username, authenticated: isAuthenticated});
+          (reply.requestStatus === 'borrower_not_found' ||
+            reply.requestStatus === 'borrowercheck_not_allowed') &&
+          typeof user.id === 'undefined' &&
+          typeof username === 'string' &&
+          username === password;
+        const isAuthenticated =
+          actualUserAuthenticated || imaginaryUserAuthenticated;
+        log.info('borchk.getUser', {
+          user: username,
+          authenticated: isAuthenticated
+        });
         return isAuthenticated ? {id: username} : false; // TODO: is username/cpr the right userid?
       })
-      .catch((err) => {
-        log.error('borchk.getUser failed', {error: {message: err.message, stacktrace: err.stack}});
+      .catch(err => {
+        log.error('borchk.getUser failed', {
+          error: {message: err.message, stacktrace: err.stack}
+        });
         return Promise.reject(err);
       });
   }

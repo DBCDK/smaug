@@ -6,11 +6,11 @@
 
 import Throttler from './throttle.js';
 
-
 /**
  * The middleware will throttleRequest requests based on credentials usage.
  */
-export default function throttle(options) { // eslint-disable-line no-unused-vars
+// eslint-disable-next-line no-unused-vars
+export default function throttle(options) {
   options = options || {};
 
   const throttler = new Throttler();
@@ -23,16 +23,14 @@ export default function throttle(options) { // eslint-disable-line no-unused-var
     if (username) {
       // check if username has exceeded
       const isBannedPromise = throttler.isUserBanned(username);
-      isBannedPromise.then((isBanned) => {
+      isBannedPromise.then(isBanned => {
         if (isBanned) {
           setTimeout(next, 5000);
-        }
-        else {
+        } else {
           next();
         }
       });
-    }
-    else {
+    } else {
       // nothing happened..
       next();
     }

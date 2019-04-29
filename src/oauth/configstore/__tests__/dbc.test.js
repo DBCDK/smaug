@@ -19,7 +19,7 @@ var expectedSearchBlock = {
   }
 };
 
-describe('dbc ConfigStore', function () {
+describe('dbc ConfigStore', function() {
   var config = {
     default: {
       foo: 'default',
@@ -36,8 +36,7 @@ describe('dbc ConfigStore', function () {
     }
   };
 
-  var stores = {
-  };
+  var stores = {};
 
   stores.agencyStore = new InmemoryAgencyStore(stores, {
     agencies: {
@@ -47,38 +46,73 @@ describe('dbc ConfigStore', function () {
   });
   stores.clientStore = new InmemoryClientStore(stores, {
     clients: {
-      appDevLTD: {config: {search: {agency: '190101', profile: 'default', collectionidentifiers: ''}}},
-      aClient: {config: {search: {agency: '190101', profile: 'default', collectionidentifiers: ''}}}
+      appDevLTD: {
+        config: {
+          search: {
+            agency: '190101',
+            profile: 'default',
+            collectionidentifiers: ''
+          }
+        }
+      },
+      aClient: {
+        config: {
+          search: {
+            agency: '190101',
+            profile: 'default',
+            collectionidentifiers: ''
+          }
+        }
+      }
     }
   });
 
-  before(function () {
+  before(function() {
     stores.configStore = new ConfigStore(stores, config);
   });
 
-  it('should retrieve the default configuration', function () {
+  it('should retrieve the default configuration', function() {
     var user = userDecode('anUser@aLibrary');
     var expected = lodash.cloneDeep(config.default);
     Object.assign(expected, expectedSearchBlock);
-    return stores.configStore.get(user, {id: 'aClient'}).should.eventually.deep.equal(expected);
+    return stores.configStore
+      .get(user, {id: 'aClient'})
+      .should.eventually.deep.equal(expected);
   });
 
-
-  it('should retrieve the client-specific configuration', function () {
+  it('should retrieve the client-specific configuration', function() {
     var user = userDecode('anUser@aLibrary');
-    var expected = Object.assign({}, config.clients.appDevLTD, expectedSearchBlock);
-    return stores.configStore.get(user, {id: 'appDevLTD'}).should.eventually.deep.equal(expected);
+    var expected = Object.assign(
+      {},
+      config.clients.appDevLTD,
+      expectedSearchBlock
+    );
+    return stores.configStore
+      .get(user, {id: 'appDevLTD'})
+      .should.eventually.deep.equal(expected);
   });
 
-  it('should retrieve the library-specific configuration', function () {
+  it('should retrieve the library-specific configuration', function() {
     var user = userDecode('anUser@000000');
-    var expected = Object.assign({}, config.libraries['000000'], expectedSearchBlock);
-    return stores.configStore.get(user, {id: 'appDevLTD'}).should.eventually.deep.equal(expected);
+    var expected = Object.assign(
+      {},
+      config.libraries['000000'],
+      expectedSearchBlock
+    );
+    return stores.configStore
+      .get(user, {id: 'appDevLTD'})
+      .should.eventually.deep.equal(expected);
   });
 
-  it('should retrieve the user-specific configuration', function () {
+  it('should retrieve the user-specific configuration', function() {
     var user = userDecode('donald@000000');
-    var expected = Object.assign({}, config.users['donald@000000'], expectedSearchBlock);
-    return stores.configStore.get(user, {id: 'appDevLTD'}).should.eventually.deep.equal(expected);
+    var expected = Object.assign(
+      {},
+      config.users['donald@000000'],
+      expectedSearchBlock
+    );
+    return stores.configStore
+      .get(user, {id: 'appDevLTD'})
+      .should.eventually.deep.equal(expected);
   });
 });
