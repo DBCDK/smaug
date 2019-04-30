@@ -47,7 +47,7 @@ Object.keys(backends).forEach(backendName => {
     var token = chance.string();
     var clientId = uuid.v4();
     var expires = moment().add(1, 'days');
-    var user = {id: chance.string()};
+    var user = {id: chance.string(), uniqueId: chance.string()};
 
     before(done => {
       if (backendName === 'postgres') {
@@ -133,6 +133,17 @@ Object.keys(backends).forEach(backendName => {
           .getAccessToken(token)
           .then(result => {
             result.userId.should.equal(user.id);
+          })
+          .catch(error => {
+            throw error;
+          });
+      });
+
+      it('should return a token with field "uniqueId"', function() {
+        return tokenStore
+          .getAccessToken(token)
+          .then(result => {
+            result.uniqueId.should.equal(user.uniqueId);
           })
           .catch(error => {
             throw error;

@@ -32,6 +32,7 @@ class TokenStore {
     tokens[accessToken] = {
       clientId: clientId,
       userId: user.id,
+      uniqueId: user.uniqueId,
       expires: expires.toISOString()
     };
 

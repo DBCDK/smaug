@@ -3,6 +3,7 @@
 import lodash from 'lodash';
 import url from 'url';
 import {log, userEncode} from '../utils';
+import {getUniqueId} from '../lib/culr/culr.client';
 // import Throttler from '../throttle/throttle.js';
 
 /**
@@ -95,8 +96,20 @@ export class Model {
 
         auth[authBackend]
           .getUser(username, password)
-          .then(user => {
+          .then(async user => {
             if (user) {
+              try {
+                if (providedUser.auth) {
+                  const uniqueId = await getUniqueId({
+                    userIdValue: providedUser.auth,
+                    agencyId: providedUser.host
+                  });
+                  user = Object.assign({}, user, {uniqueId});
+                }
+              } catch (e) {
+                callback(e, null);
+              }
+
               if (typeof storePasswordsInRedisClient !== 'undefined') {
                 storePasswordsInRedisClient.set(
                   username,
