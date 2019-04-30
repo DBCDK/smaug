@@ -231,6 +231,7 @@ describe('web app', function() {
         expected.user.agency = user.libraryId;
         expected.user.isil = `DK-${user.libraryId}`;
         expected.user.pin = password;
+        expected.user.uniqueId = null;
 
         returnedConfig.should.deep.equal(expected);
       })
