@@ -136,6 +136,7 @@ export function createConfigurationApp(config) {
           user.libraryId.indexOf('DK-') === 0
             ? user.libraryId
             : `DK-${user.libraryId}`;
+        user.uniqueId = tokenInfo.uniqueId;
         const client = {id: tokenInfo.clientId};
         return app
           .get('stores')
