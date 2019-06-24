@@ -51,18 +51,3 @@ CMD node src/main.js -f config.json
 #
 #https://git.dbc.dk/config/smaug/files/36d94ff60d04174c80363d5fc4e40cfb8d1b7556/smaug-stg.json
 #https://github.com/DBCDK/smaug
-
-
-# Old Dockerfile:
-#FROM docker-xp.dbc.dk/node:6
-#MAINTAINER Adam F. Tulinius <atu@dbc.dk>
-#
-#ADD . /opt/smaug
-#RUN cd /opt/smaug && npm install
-#ADD docker/start-smaug.sh /bin/start-smaug.sh
-#
-#EXPOSE 8001
-#EXPOSE 8002
-#EXPOSE 8003
-#
-#CMD ["/bin/start-smaug.sh"]
