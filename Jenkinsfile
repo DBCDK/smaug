@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker run -p 3000:3001 --name=$CONTAINER_NAME $DOCKER_NAME &
+                        docker run -p 3001:3000 --name=$CONTAINER_NAME $DOCKER_NAME &
                         # Wait for 10 seconds for the container to be set up correct before the test
                         sleep 10
                     """
