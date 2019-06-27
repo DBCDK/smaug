@@ -123,6 +123,15 @@ curl --user admin:password -X POST http://localhost:$PORT_ADMIN/clients/token/b0
 }
 ```
 
+```
+# get authenticated token without specifying password
+curl --user admin:password -X POST http://localhost:$PORT_ADMIN/clients/token/b0819839-6bbf-4218-9895-2ddde8e0d32a -d 'grant_type=password&username=donald@010101'
+{
+  "token_type": "bearer",
+  "access_token": "f523776caa3871cabf52668c34c09445267feace",
+  "expires_in": 2592000
+}
+
 
 #### config
 
