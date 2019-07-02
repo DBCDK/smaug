@@ -68,7 +68,7 @@ export class Model {
     }
   }
 
-  getUser(encodedUser, password, callback) {
+  getUser(encodedUser, password, callback, authBackend) {
     const providedUser = url.parse(encodedUser);
     const username = userEncode(providedUser.host, providedUser.auth);
     const clientId = providedUser.protocol.substring(
@@ -85,7 +85,7 @@ export class Model {
     stores.clientStore
       .get(clientId)
       .then(client => {
-        const authBackend = client.auth || 'default';
+        authBackend = authBackend || client.auth || 'default';
         log.debug('Using auth backend ' + authBackend, {
           authBackend: authBackend
         });

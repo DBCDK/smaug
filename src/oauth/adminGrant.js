@@ -16,28 +16,33 @@ function AdminGrant(app, req, res, next) {
     auth: user.id,
     slashes: true
   });
-  app.oauth.model.getUser(req.body.username, req.body.password, (err, user) => {
-    if (err) return next(error('server_error', false, err));
-    if (!user) {
-      return next(error('invalid_client', 'User credentials are invalid'));
-    }
-    if (user) {
-      const tokenStore = app.get('stores').tokenStore;
-      generateToken(app.oauth, 'accessToken', (err, token) => {
-        const clientId = req.params.clientId;
-        const tokenExpiration =
-          app.oauth.accessTokenLifetime || 60 * 60 * 24 * 30;
-        const expires = new Date(Date.now() + tokenExpiration * 1000);
-        tokenStore
-          .storeAccessToken(token, clientId, expires, user)
-          .then(() => tokenStore.getAccessToken(token))
-          .then(tokenInfo =>
-            sendResponse(res, next, tokenInfo, tokenExpiration)
-          )
-          .catch(error => next(new Error(error)));
-      });
-    }
-  });
+  app.oauth.model.getUser(
+    req.body.username,
+    req.body.password,
+    (err, user) => {
+      if (err) return next(error('server_error', false, err));
+      if (!user) {
+        return next(error('invalid_client', 'User credentials are invalid'));
+      }
+      if (user) {
+        const tokenStore = app.get('stores').tokenStore;
+        generateToken(app.oauth, 'accessToken', (err, token) => {
+          const clientId = req.params.clientId;
+          const tokenExpiration =
+            app.oauth.accessTokenLifetime || 60 * 60 * 24 * 30;
+          const expires = new Date(Date.now() + tokenExpiration * 1000);
+          tokenStore
+            .storeAccessToken(token, clientId, expires, user)
+            .then(() => tokenStore.getAccessToken(token))
+            .then(tokenInfo =>
+              sendResponse(res, next, tokenInfo, tokenExpiration)
+            )
+            .catch(error => next(new Error(error)));
+        });
+      }
+    },
+    req.body.password ? null : 'allowAll' // The 'allow-all' UserStore has to be configured
+  );
 }
 
 /**

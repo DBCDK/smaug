@@ -217,6 +217,25 @@ describe('admin app', function() {
         .expect(400, done);
     });
 
+    it('should use allowAll UserStore, when password is not set', function(done) {
+      request(app)
+        .post('/clients/token/' + clientId)
+        .auth(admin_username, admin_password)
+        .type('json')
+        .send(
+          JSON.stringify({
+            grant_type: 'password',
+            username: username
+          })
+        )
+        .expect(res => {
+          res.body.should.have.property('token_type');
+          res.body.should.have.property('access_token');
+          res.body.should.have.property('expires_in');
+        })
+        .expect(200, done);
+    });
+
     it('should delete a client', function(done) {
       request(app)
         .delete('/clients/' + clientId)
