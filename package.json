@@ -4,13 +4,12 @@
   "description": "Smaug is the authentication part of https://github.com/DBCDK/serviceprovider",
   "main": "src/main.js",
   "scripts": {
-    "dev": "npm run serve -s",
+    "dev": "nodemon -r dotenv/config src/main.js",
     "lint": "eslint ./src",
     "lint:checkstyle": "eslint ./src -o report.xml -f checkstyle",
     "migrate": "sequelize db:migrate --migrations-path ./src/migrations --url \"$DATABASE_URI\"",
     "prettier": "prettier --no-bracket-spacing --single-quote --write \"src/**/*.js\"",
     "sequelize": "sequelize",
-    "serve": "supervisor --instant-kill -w src,node_modules -- src/main.js -f config.json",
     "start": "node src/main.js",
     "test": "LOG_LEVEL=off mocha --compilers js:babel-core/register --recursive src/**/__tests__/*",
     "testverbose": "LOG_LEVEL=debug mocha --compilers js:babel-core/register --recursive src/**/__tests__/*"
@@ -40,7 +39,6 @@
     "express": "4.13.4",
     "http-errors": "^1.4.0",
     "lodash": "^3.10.1",
-    "minimist": "^1.2.0",
     "moment": "^2.12.0",
     "node-cache": "^3.2.1",
     "oauth2-server": "^2.4.1",
@@ -59,12 +57,13 @@
     "chai": "^3.0.0",
     "chai-as-promised": "^5.0.0",
     "chance": "^1.0.0",
+    "dotenv": "^8.0.0",
     "eslint": "^3.0.0",
     "mocha": "^2.4.5",
+    "nodemon": "^1.19.1",
     "prettier": "^1.17.0",
     "sequelize-fixtures": "^0.5.4",
     "sinon": "^1.17.3",
-    "supertest": "1.2.0",
-    "supervisor": "^0.9.1"
+    "supertest": "1.2.0"
   }
 }
