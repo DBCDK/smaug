@@ -56,10 +56,8 @@ describe('web app', function() {
       culr: {},
       mock_externals: {culr: '1'},
       defaultLibraryId: '000000',
-      whoCaresAboutSecurityAnyway: {
-        storePasswordsInRedis: {
-          prefix: 'users'
-        }
+      storePasswordsInRedis: {
+        prefix: 'users'
       }
     };
     configStoreConfig = {
