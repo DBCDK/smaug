@@ -1,4 +1,3 @@
-console.log(process.env.REDIS);
 module.exports = {
   ports: {
     oAuth: process.env.PORT_OAUTH || process.env.PORT,
