@@ -17,7 +17,7 @@ module.exports = {
   },
   datasources: {
     postgres: {
-      uri: process.env.POSTGRES_CONNECTION_STRING
+      uri: process.env.DATABASE_URI
     },
     redis: {
       uri: process.env.REDIS

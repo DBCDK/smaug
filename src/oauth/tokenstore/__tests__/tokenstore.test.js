@@ -16,7 +16,7 @@ import models from '../../../models';
 chai.use(chaiAsPromised);
 chai.should();
 
-const pgModels = models();
+let pgModels;
 
 var backends = {
   inmemory: () => {
@@ -27,8 +27,12 @@ var backends = {
       {},
       {backend: {redisClient: redis.createClient()}}
     );
-  },
-  postgres: () => {
+  }
+};
+
+if (process.env.DATABASE_URI) {
+  pgModels = models();
+  backends.postgres = () => {
     return new PostgresTokenStore(
       {},
       {
@@ -37,8 +41,8 @@ var backends = {
         }
       }
     );
-  }
-};
+  };
+}
 
 Object.keys(backends).forEach(backendName => {
   describe(backendName + ' TokenStore', () => {

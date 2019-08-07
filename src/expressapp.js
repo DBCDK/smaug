@@ -28,6 +28,13 @@ function createBasicApp(config) {
         prefix: storePasswordsInRedis.prefix || 'user:'
       })
     );
+  } else if (storePasswordsInRedis.prefix) {
+    app.set(
+      'storePasswordsInRedisClient',
+      redis.createClient({
+        prefix: storePasswordsInRedis.prefix
+      })
+    );
   }
 
   app.disable('x-powered-by');
