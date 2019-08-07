@@ -127,7 +127,7 @@ export default class PostgresClientStore extends ClientStore {
       return Promise.resolve(cachedEntry);
     }
 
-    return this.clients.findByPrimary(clientId).then(client => {
+    return this.clients.findByPk(clientId).then(client => {
       if (!client) {
         return Promise.reject('ClientId not found');
       }
@@ -182,7 +182,7 @@ export default class PostgresClientStore extends ClientStore {
         .catch(reject);
     })
       .then(() => {
-        return this.clients.findByPrimary(clientId);
+        return this.clients.findByPk(clientId);
       })
       .then(clientInstance => {
         if (!clientInstance) {
@@ -199,7 +199,7 @@ export default class PostgresClientStore extends ClientStore {
   }
 
   delete(clientId) {
-    return this.clients.findByPrimary(clientId).then(clientInstance => {
+    return this.clients.findByPk(clientId).then(clientInstance => {
       if (!clientInstance) {
         return Promise.reject('Could not find client!');
       }

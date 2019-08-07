@@ -155,7 +155,7 @@ Object.keys(backends).forEach(backendName => {
       });
 
       it('should be possible to revoke a token.', done => {
-        return tokenStore
+        tokenStore
           .revokeToken(token)
           .then(() => tokenStore.getAccessToken(token))
           .catch(err => {
