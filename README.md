@@ -4,13 +4,43 @@
 
 Smaug is a system for granting OAuth2 access tokens, and mapping them to JSON-formatted configuration objects.
 
+## Setup development environment
+
+Create a .env file [.env-example](/examples/config/.env-example) in the root of the project with the following environment variables:
+
+```shell
+PORT=3001 # Main/oAuth application port
+PORT_ADMIN=3002 # Port for admin application
+PORT_CONFIG=3003 # Port for config application
+
+CULR_URI="https://culr.addi.dk/1.4/CulrWebService?wsdl" # uri to CULR WSDL
+CULR_USER_ID_AUT="xxx" # CULR auth
+CULR_GROUP_ID_AUT=xxx # CULR auth
+CULR_PASSWORD_AUT="xxx" # CULR auth
+
+DATABASE_URI="postgres://postgres:postgres@localhost:5432/smaug" # Postgres connection string
+REDIS="redis://localhost:6379" # Redis uri
+
+ADMIN_USERS={"admin": "admin"} # list of admin users (as JSON)
+
+DEFAULT_LIBRARY_ID="190101" # default library id used with borchk if not specified by requester
+SERVICE_REQUESTER="login.bib.dk" # servicerequester used with borchk
+BORCHK_WSDL="https://borchk.addi.dk/2.5.0/?wsdl" # uri for Borchk WSDL
+
+# default client configuration
+CONFIG_USER_SALT="some_salt" # salt for user ID
+CONFIG_NETPUNKT_USER="xxx" # netpunkt auth
+CONFIG_NETPUNKT_GROUP="xxx" # netpunkt auth
+CONFIG_NETPUNKT_PASSWORD="xxx" # netpunkt auth
+CONFIG_PERFORMANCE_PASSWORD='xxx' # Login to zabbix
+CONFIG_PERFORMANCE_USERNAME='xxx' # Login to zabbix
+```
 
 ## OAuth2
 
 ### Supported grant types
 
-* Client Credentials
-
+- Client Credentials
 
 ### Requesting an annonymous access token
 
@@ -27,14 +57,6 @@ Smaug is a system for granting OAuth2 access tokens, and mapping them to JSON-fo
 ## Configuration
 
 Get: `curl http://$smaugLocation/configuration?token=...`
-
-
-## Getting up and running
-
-1. `git clone ...`
-2. `npm install`
-3. `node src/main.js -f config.json`
-
 
 ## Example requests
 
@@ -136,6 +158,11 @@ curl --user admin:password -X POST http://localhost:$PORT_ADMIN/clients/token/b0
 #### config
 
 ```
+
 # list config
+
 curl --user admin:password http://localhost:$PORT_ADMIN/config
+
+```
+
 ```

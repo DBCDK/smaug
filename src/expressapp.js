@@ -13,8 +13,6 @@ import {log} from './utils';
 import Model from './oauth/twolevel.model.js';
 import adminGrant from './oauth/adminGrant';
 import * as culr from './lib/culr/culr.client';
-
-// import throttle from './throttle/throttle.middleware.js';
 import {userEncode, userDecode} from './utils';
 
 function createBasicApp(config) {
@@ -22,13 +20,20 @@ function createBasicApp(config) {
   var app = express();
   app.set('config', config);
 
-  var storePasswordsInRedisOptions = (
-    app.get('config').whoCaresAboutSecurityAnyway || {}
-  ).storePasswordsInRedis;
-  if (storePasswordsInRedisOptions) {
+  const {storePasswordsInRedis = {}} = app.get('config');
+  if (storePasswordsInRedis.uri) {
     app.set(
       'storePasswordsInRedisClient',
-      redis.createClient(storePasswordsInRedisOptions)
+      redis.createClient(storePasswordsInRedis.uri, {
+        prefix: storePasswordsInRedis.prefix || 'user:'
+      })
+    );
+  } else if (storePasswordsInRedis.prefix) {
+    app.set(
+      'storePasswordsInRedisClient',
+      redis.createClient({
+        prefix: storePasswordsInRedis.prefix
+      })
     );
   }
 
@@ -246,8 +251,6 @@ export function createOAuthApp(config = {}) {
     debug: true,
     accessTokenLifetime: config.tokenExpiration || 60 * 60 * 24 * 30 // default to 30 days
   });
-
-  // app.use(throttle());
 
   // Add implicit libraryId to anonymous user without libraryId, and change the password from accordingly.
   // The password must be equal to the username for an anonymous request, and userEncode(libraryId, null) returns the proper anonymous username/password for this

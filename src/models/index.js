@@ -5,7 +5,7 @@ import path from 'path';
 import Sequelize from 'sequelize';
 import {log} from '../utils';
 
-export default function models(config) {
+export default function models(config = {}) {
   const basename = path.basename(module.filename);
   const sequelize = new Sequelize(process.env.DATABASE_URI || config.uri, {
     logging: log.debug

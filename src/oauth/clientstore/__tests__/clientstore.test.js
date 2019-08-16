@@ -13,8 +13,11 @@ chai.should();
 var backends = {
   inmemory: () => {
     return new InmemoryClientStore({});
-  },
-  postgres: () => {
+  }
+};
+
+if (process.env.DATABASE_URI) {
+  backends.postgres = () => {
     return new PostgresClientStore(
       {},
       {
@@ -23,8 +26,8 @@ var backends = {
         }
       }
     );
-  }
-};
+  };
+}
 
 Object.keys(backends).forEach(backendName => {
   describe(backendName + ' ClientStore', () => {

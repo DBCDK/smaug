@@ -1,7 +1,5 @@
 'use strict';
 
-import fs from 'fs';
-import minimist from 'minimist';
 import redis from 'redis';
 import {log} from './utils';
 import {
@@ -11,16 +9,7 @@ import {
   createConfigurationApp
 } from './expressapp';
 import models from './models';
-
-const args = minimist(process.argv.slice(2));
-const config = JSON.parse(fs.readFileSync(args.f || './config.json', 'utf8'));
-
-// Setup
-const port = process.env.PORT || 3001; // eslint-disable-line no-process-env
-const adminPort = process.env.PORT_ADMIN; // eslint-disable-line no-process-env
-const oAuthPort = process.env.PORT_OAUTH || port; // eslint-disable-line no-process-env
-const configurationPort = process.env.PORT_CONFIG || port; // eslint-disable-line no-process-env
-const splitMode = oAuthPort !== configurationPort;
+import config from './config/config';
 
 if (config.datasources && config.datasources.postgres) {
   config.datasources.postgres.models = models(config.datasources.postgres);
@@ -40,7 +29,7 @@ function loadBackend(storeName, storeConfig) {
     '/' +
     storeBackend).default;
   store.requiredOptions().forEach(requiredOption => {
-    if (typeof storeConfig[requiredOption] === 'undefined') {
+    if (typeof storeConfig.config[requiredOption] === 'undefined') {
       throw new Error(
         'Missing option for ' + storeConfig.backend + ': ' + requiredOption
       );
@@ -74,21 +63,29 @@ Object.keys(config.auth).forEach(authBackendName => {
 
 var apps = [];
 
-if (splitMode) {
-  apps.push({express: createOAuthApp(config), port: oAuthPort, name: 'auth'});
+if (config.ports.oAuth !== config.ports.configuration) {
+  apps.push({
+    express: createOAuthApp(config),
+    port: config.ports.oAuth,
+    name: 'auth'
+  });
   apps.push({
     express: createConfigurationApp(config),
-    port: configurationPort,
+    port: config.ports.configuration,
     name: 'config'
   });
 } else {
-  // Since $oAuthPort and $configurationPort can be set to the same port, but might be different from $port,
+  // Since config.ports.oAuth and config.ports.configuration can be set to the same port, but might be different from $port,
   // it might be wrong to listen on $port when not in split mode.
-  apps.push({express: createApp(config), port: oAuthPort});
+  apps.push({express: createApp(config), port: config.ports.oAuth});
 }
 
-if (typeof adminPort !== 'undefined') {
-  apps.push({express: createAdminApp(config), port: adminPort, name: 'admin'});
+if (typeof config.ports.admin !== 'undefined') {
+  apps.push({
+    express: createAdminApp(config),
+    port: config.ports.admin,
+    name: 'admin'
+  });
 }
 
 apps.forEach(app => {

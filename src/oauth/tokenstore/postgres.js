@@ -4,6 +4,7 @@
 
 import NodeCache from 'node-cache';
 import MemoryTokenStore from './inmemory';
+import {Op} from 'sequelize';
 
 class TokenStore extends MemoryTokenStore {
   constructor(stores, config = {}) {
@@ -71,7 +72,7 @@ class TokenStore extends MemoryTokenStore {
         .findOne({
           where: {
             id: bearerToken,
-            expires: {$gte: now.toISOString()}
+            expires: {[Op.gte]: now.toISOString()}
           }
         })
         .then(tokenResponse => {
