@@ -34,6 +34,15 @@ RUN cp -R --preserve=links src prod_build/src && \
 # ---- Release ----
 FROM $NODE_BASEIMAGE AS release
 WORKDIR /home/node/app
+RUN apt-get update && \
+  apt-get install -y net-tools && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+  apt-get install -y  netcat telnet && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
+
 COPY --chown=node:node --from=build /home/node/app/prod_build ./
 EXPOSE 3000
 USER node

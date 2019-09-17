@@ -56,9 +56,9 @@ pipeline {
             }
         }
         stage('Push to Artifactory') {
-            when {
-                branch "master"
-            }
+//            when {
+//                branch "master"
+//            }
             steps {
                 script {
                     if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
