@@ -24,7 +24,7 @@ pipeline {
                 }
             }
         }
-        stage('Run docker') {
+        /*stage('Run docker') {
             steps {
                 script {
                     sh """
@@ -54,7 +54,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
         stage('Push to Artifactory') {
 //            when {
 //                branch "master"
