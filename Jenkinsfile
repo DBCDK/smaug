@@ -80,7 +80,6 @@ pipeline {
             script {
                 sh """
                     echo Hello
-                    docker kill $CONTAINER_NAME
                     docker rm $CONTAINER_NAME
                     docker rmi $DOCKER_NAME
                 """
