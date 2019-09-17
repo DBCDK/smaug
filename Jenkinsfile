@@ -24,41 +24,11 @@ pipeline {
                 }
             }
         }
-        /*stage('Run docker') {
-            steps {
-                script {
-                    sh """
-                        docker run -p 3001:3000 --name=$CONTAINER_NAME $DOCKER_NAME &
-                        # Wait for 10 seconds for the container to be set up correct before the test
-                        sleep 10
-                    """
-                }
-            }
-        }
-        stage ('Check container is running correct') {
+        //missing steps to run docker-compose
+        stage('Push to Artifactory') {
             when {
                 branch "master"
             }
-            steps {
-                script {
-                    DOCKER_STATUS = sh (
-                        script: "docker exec $CONTAINER_NAME /bin/bash -c \"curl -I http://localhost:3001 | grep HTTP | cut -d ' ' -f2\"",
-                        returnStdout: true
-                    ).trim()
-                    // If DOCKER_STATUS == 200, then there is a working webpage and all is well
-                    if (DOCKER_STATUS == "200") {
-                        echo "Succes"
-                    } else {
-                        echo "Build failed"
-                        currentBuild.result = 'FAILURE'
-                    }
-                }
-            }
-        }*/
-        stage('Push to Artifactory') {
-//            when {
-//                branch "master"
-//            }
             steps {
                 script {
                     if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
@@ -80,8 +50,7 @@ pipeline {
             script {
                 sh """
                     echo Hello
-                    docker rm $CONTAINER_NAME
-                    docker rmi $DOCKER_NAME
+                    docker image rm $DOCKER_NAME
                 """
             }
         }
