@@ -35,6 +35,12 @@ export default class UserStore {
       libraryCode: 'DK-' + user.libraryId
     };
 
+    // Due to changes in borchk 2.5 response when using library 190101 have changed
+    // This fixes that issue.
+    if (username === '@190101' && username === password) {
+      return Promise.resolve({id: username});
+    }
+
     return this.borchkClient
       .getBorrowerCheckResult(borchkRequest)
       .then(reply => {
