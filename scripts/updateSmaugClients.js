@@ -14,9 +14,14 @@ const stdio = require('stdio');
 const option = getOptions();
 
 const smaugObject = JSON.parse(option.smaugObject);
-smaugObject.config["singleLogoutPath"] = "/adgangsplaformen/logout/iframe";
-
 const id = smaugObject.id;
+if (!smaugObject.config.singleLogoutPath) {
+  smaugObject.config.singleLogoutPath = "/adgangsplaformen/logout/iframe";
+} else {
+  console.log("echo singleLogoutPath is already set for id: " + id + ". Contains: " + smaugObject.config.singleLogoutPath);
+  process.exit(1);
+}
+
 
 const curlLine = "curl -X PUT -H \"Content-Type: application/json\" --user " + option.smaugUserPwd + " " +  option.smaugAdminUrl + "/clients/" + id + " -d '{\"config\":" + JSON.stringify(smaugObject.config) + "}'";
 console.log(curlLine);
@@ -29,7 +34,7 @@ console.log(curlLine);
  */
 function getOptions() {
   const ops = stdio.getopt({
-    smaugObject:{key: 'a', args: 1, description: 'smaug object'},
+    smaugObject:{key: 'o', args: 1, description: 'smaug object'},
     smaugUserPwd: {key: 'p', args: 1, description: 'smaug admin user:password'},
     smaugAdminUrl: {key: 's', args: 1, description: 'smaug admin endpoint, ex: https://auth-admin-stg.dbc.dk'}
   });

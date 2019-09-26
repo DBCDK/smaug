@@ -23,5 +23,5 @@ for id in $ids
 do
     #echo "echo update client data for id: $id"
     smaugObject=$(curl -X GET --user $smaugUserPwd $smaugAdminUrl/clients/${id} 2>/dev/null)
-    ./updateSmaugClients.js -a "$smaugObject" -p $smaugUserPwd -s $smaugAdminUrl
+    ./updateSmaugClients.js -o "$smaugObject" -p $smaugUserPwd -s $smaugAdminUrl
 done
