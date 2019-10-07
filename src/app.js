@@ -11,18 +11,19 @@ import {
 import models from './models';
 import config from './config/config';
 
-if (config.datasources && config.datasources.postgres) {
+if (config.datasources && config.datasources.postgres.uri) {
   config.datasources.postgres.models = models(config.datasources.postgres);
 }
 
-if (config.datasources && config.datasources.redis) {
+if (config.datasources && config.datasources.redis.uri) {
   config.datasources.redis.redisClient = redis.createClient(
     config.datasources.redis.uri
   );
 }
 
 function loadBackend(storeName, storeConfig) {
-  const storeBackend = storeConfig.backend || 'inmemory';
+  const storeBackend =
+    (!config.mock_externals.db && storeConfig.backend) || 'inmemory';
   storeConfig.config.backend = config.datasources[storeBackend];
   const store = require('./oauth/' +
     storeName.toLowerCase() +

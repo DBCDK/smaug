@@ -12,7 +12,8 @@ module.exports = {
     passwordAut: process.env.CULR_PASSWORD_AUT
   },
   mock_externals: {
-    culr: process.env.MOCK_CULR || 0
+    culr: process.env.MOCK_CULR || 0,
+    db: process.env.MOCK_DB || 0
   },
   datasources: {
     postgres: {
