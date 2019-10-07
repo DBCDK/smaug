@@ -26,7 +26,7 @@ RUN cp -R --preserve=links src prod_build/src && \
   cp -R .babelrc prod_build/.babelrc
 
 # run test @see package.json
-#RUN npm run test
+RUN npm run test
 
 #
 # ---- Release ----
