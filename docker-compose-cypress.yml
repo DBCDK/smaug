@@ -1,0 +1,28 @@
+version: '3'
+services:
+  database:
+    image: postgres:9.6
+    volumes:
+      - ./tools/postgres-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DATABASE: smaug
+  web:
+    image: '${IMAGE:-docker-ux.dbc.dk/smaug-master:latest}'
+    env_file: ./test/test.env
+    environment:
+      - DATABASE_URI=postgres://smaug:smaug@database/smaug
+      - BABEL_CACHE_PATH=~/app/babel.cache.json
+    depends_on:
+      - database
+  e2e:
+    ipc: host ## Prevent Docker Crash in Cypress (https://github.com/cypress-io/cypress/issues/350)
+    image: docker.dbc.dk/cypress:latest
+    volumes:
+      - './e2e:/app/e2e'
+    depends_on:
+      - web
+    environment:
+      - CYPRESS_adminUrl=http://web:3002
+      - CYPRESS_baseUrl=http://web:3001
+
+    command: bash -c 'npm run cy'

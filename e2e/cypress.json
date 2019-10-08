@@ -1,9 +1,12 @@
 {
-  "baseUrl": "http://localhost",
+  "baseUrl": "http://localhost:3001",
   "video": false,
   "reporter": "junit",
   "reporterOptions": {
     "mochaFile": "/app/e2e/reports/test-result-[hash].xml",
     "toConsole": true
+  },
+  "env": {
+    "adminUrl": "http://localhost:3002"
   }
 }

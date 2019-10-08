@@ -32,5 +32,4 @@ node_modules
 # ============
 newrelic.config.js
 .env
-
-NODE_ENV_DOCKERFILE
+e2e/reports/

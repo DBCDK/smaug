@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   ports: {
     oAuth: process.env.PORT_OAUTH || process.env.PORT,
     admin: process.env.PORT_ADMIN,
@@ -144,3 +144,5 @@ module.exports = {
     }
   }
 };
+
+module.exports = config;
