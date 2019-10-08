@@ -5,7 +5,9 @@ FROM  $NODE_BASEIMAGE AS build
 WORKDIR /home/node/app
 # copy project file
 COPY src/ src/
+COPY test/ test/
 COPY .babelrc .
+COPY .eslintrc .
 COPY package.json .
 
 ENV CI=true
@@ -26,7 +28,7 @@ RUN cp -R --preserve=links src prod_build/src && \
   cp -R .babelrc prod_build/.babelrc
 
 # run test @see package.json
-RUN npm run test
+RUN npm run test && npm run lint
 
 #
 # ---- Release ----

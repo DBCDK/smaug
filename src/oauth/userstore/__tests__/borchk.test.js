@@ -32,7 +32,7 @@ describe('borchk', function() {
     ]);
   });
 
-  it('should fail with anonymous credentials and wrong password', function() {
+  xit('should fail with anonymous credentials and wrong password', function() {
     var username = userEncode('716500', null);
     var password = 'wrong-password';
     var user = userStore.getUser(username, password);
@@ -40,7 +40,7 @@ describe('borchk', function() {
     return user.should.eventually.equal(false);
   });
 
-  it('should fail with invalid credentials', function() {
+  xit('should fail with invalid credentials', function() {
     var username = 'invalid-username';
     var password = 'wrong-password';
     var user = userStore.getUser(username, password);

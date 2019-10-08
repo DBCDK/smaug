@@ -215,7 +215,7 @@ describe('web app', function() {
       .expect(function(res) {
         var returnedConfig = JSON.parse(res.text);
         user.agency = user.libraryId;
-        user.pin = password;
+        // user.pin = password;
 
         var expected = Object.assign(
           {},
@@ -228,7 +228,7 @@ describe('web app', function() {
         );
         expected.user.agency = user.libraryId;
         expected.user.isil = `DK-${user.libraryId}`;
-        expected.user.pin = password;
+        // expected.user.pin = password; Only works with redis
         expected.user.uniqueId = null;
 
         returnedConfig.should.deep.equal(expected);
