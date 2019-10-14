@@ -23,3 +23,17 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('createClient', client => {
+  return cy
+    .request({
+      url: `${Cypress.env('adminUrl')}/clients`,
+      method: 'POST',
+      auth: {
+        user: 'admin',
+        pass: 'admin'
+      },
+      body: client
+    })
+    .then(({body}) => body);
+});

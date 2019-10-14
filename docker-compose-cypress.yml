@@ -23,6 +23,8 @@ services:
       - web
     environment:
       - CYPRESS_adminUrl=http://web:3002
+      - CYPRESS_oAuthUrl=http://web:3001
+      - CYPRESS_configUrl=http://web:3003
       - CYPRESS_baseUrl=http://web:3001
 
     command: bash -c 'npm run cy'
