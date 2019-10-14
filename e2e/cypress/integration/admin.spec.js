@@ -53,37 +53,79 @@ describe('Test admin application', () => {
   });
 
   describe('clients', function() {
-    it('should create a client', () => {
-      const client = {
-        name: 'a-client',
-        config: {},
-        contact: {owner: {name: '', phone: '', email: ''}}
-      };
+    const client = {
+      name: 'a-client',
+      config: {},
+      contact: {owner: {name: '', phone: '', email: ''}}
+    };
+
+    const request = (method, endpoint, body) =>
       cy.request({
-        url: `${baseurl}/clients`,
-        method: 'POST',
+        url: `${baseurl}${endpoint}`,
+        method: method,
         auth: {
           user,
           pass
         },
-        body: JSON.stringify(client)
-      }).should(r => {
-        console.log(r);
+        body
       });
+    const getClients = () => request('GET', '/clients').its('body');
+    const addClient = client => request('POST', '/clients', client);
 
-      /*      request(app)
-        .post('/clients')
-        .auth(admin_username, admin_password)
-        .type('json')
-        .send(JSON.stringify(client))
-        .expect(res => {
-          clientId = res.body.id;
-          clientSecret = res.body.secret;
-          res.body.should.deep.equal(
-            Object.assign({}, client, {id: clientId, secret: clientSecret})
-          );
-        })
-        .expect(200, done);*/
+    const updateClient = (clientId, client) =>
+      request('PUT', `/clients/${clientId}`, client).its('body');
+    const getClient = clientId =>
+      request('GET', `/clients/${clientId}`).its('body');
+    const deleteClient = client => request('DELETE', `/clients/${client.id}`);
+    const reset = () => getClients().each(deleteClient);
+
+    beforeEach(() => {
+      reset();
+    });
+    it('should respond with empty body', () => {
+      getClients().should('deep.equal', []);
+    });
+
+    it('should create a client', async () => {
+      const {body} = await addClient(client).should(
+        'have.all.keys',
+        'id',
+        'secret'
+      );
+      getClient(body.id)
+        .its('body')
+        .should('have.all.keys', 'name', 'config', 'contacts')
+        .its('name')
+        .should('equal', body.name);
+    });
+
+    it('should update a client', async done => {
+      const {body} = await addClient(client);
+      const updatedClient = {...client, name: 'an updated client'};
+      updateClient(body.id, updatedClient);
+      getClient(body.id)
+        .its('name')
+        .should('equal', updatedClient.name)
+        .then(() => done());
+    });
+
+    it('should delete a client', () => {
+      addClient(client)
+        .its('body')
+        .then(res => {
+          getClients().should('have.length', 1);
+          deleteClient(res)
+            .its('status')
+            .should('equal', 200);
+          getClients().should('have.length', 0);
+        });
+    });
+    it('should show a list of clients', () => {
+      addClient(client);
+      addClient({...client, name: 'client 2'});
+      getClients()
+        .should('have.length', 2)
+        .each(c => expect(['client 2', client.name]).to.contain(c.name));
     });
   });
 });
