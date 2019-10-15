@@ -12,7 +12,7 @@
     "prettier": "prettier --no-bracket-spacing --single-quote --write \"src/**/*.js\"",
     "sequelize": "sequelize",
     "start": "node src/main.js",
-    "test": "LOG_LEVEL=off mocha --require babel-core/register --recursive src/**/__tests__/* --exit --file ./test/setup-env.js",
+    "test": "LOG_LEVEL=off mocha --require babel-core/register --recursive src/**/__tests__/* --exit",
     "test:verbose": "LOG_LEVEL=debug mocha --require babel-core/register --recursive src/**/__tests__/*",
     "cy:run": "npx cypress run --project ./e2e",
     "cy:open": "npx cypress@latest open --project ./e2e"

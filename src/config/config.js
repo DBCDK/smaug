@@ -25,7 +25,9 @@ const config = {
     inmemory: {}
   },
   admin: {
-    users: JSON.parse(process.env.ADMIN_USERS)
+    users: (process.env.ADMIN_USERS && JSON.parse(process.env.ADMIN_USERS)) || {
+      admin: 'admin'
+    }
   },
 
   storePasswordsInRedis: {
@@ -46,14 +48,6 @@ const config = {
       config: {
         wsdl: process.env.BORCHK_WSDL,
         serviceRequester: process.env.SERVICE_REQUESTER
-      }
-    },
-    test: {
-      backend: 'inmemory',
-      config: {
-        users: {
-          'donald@test': 'duck'
-        }
       }
     },
     allowAll: {
