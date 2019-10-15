@@ -13,7 +13,8 @@ const config = {
   },
   mock_externals: {
     culr: process.env.MOCK_CULR || 0,
-    db: process.env.MOCK_DB || 0
+    db: process.env.MOCK_DB || 0,
+    borchk: process.env.MOCK_BORCHK || 0
   },
   datasources: {
     postgres: {

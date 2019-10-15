@@ -33,3 +33,4 @@ node_modules
 newrelic.config.js
 .env
 e2e/reports/
+e2e/cypress/screenshots/

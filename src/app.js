@@ -1,5 +1,4 @@
 'use strict';
-
 import redis from 'redis';
 import {log} from './utils';
 import {
@@ -19,6 +18,10 @@ if (config.datasources && config.datasources.redis.uri) {
   config.datasources.redis.redisClient = redis.createClient(
     config.datasources.redis.uri
   );
+}
+
+if (config.mock_externals.borchk) {
+  require('../fixtures/fixtures');
 }
 
 function loadBackend(storeName, storeConfig) {
