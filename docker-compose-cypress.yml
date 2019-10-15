@@ -2,15 +2,13 @@ version: '3'
 services:
   database:
     image: postgres:9.6
-    volumes:
-      - ./tools/postgres-initdb.d:/docker-entrypoint-initdb.d
     environment:
-      POSTGRES_DATABASE: smaug
+      - POSTGRES_USER=smaug
   web:
     image: '${IMAGE:-docker-ux.dbc.dk/smaug-master:latest}'
     env_file: ./test/test.env
     environment:
-      - DATABASE_URI=postgres://smaug:smaug@database/smaug
+      - DATABASE_URI=postgres://smaug@database/smaug
       - BABEL_CACHE_PATH=~/app/babel.cache.json
     depends_on:
       - database
