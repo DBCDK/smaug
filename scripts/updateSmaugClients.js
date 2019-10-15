@@ -15,11 +15,19 @@ const option = getOptions();
 
 const smaugObject = JSON.parse(option.smaugObject);
 const id = smaugObject.id;
-if (!smaugObject.config.singleLogoutPath) {
-  smaugObject.config.singleLogoutPath = "/adgangsplaformen/logout/iframe";
+
+// If config is supposed to be forcibly updated, then use the block
+var updateObjectKey = "grants";
+var updateObjectContent = ["authorization_code", "password"];
+smaugObject["config"][updateObjectKey] = updateObjectContent;
+
+// If config is only to be updated when empty, then use the block
+updateObjectKey = "redirectUris";
+updateObjectContent = ["https://*/adgangsplatformen/callback", "https://*/", "https://*"];
+if (!smaugObject["config"][updateObjectKey]) {
+  smaugObject["config"][updateObjectKey] = updateObjectContent;
 } else {
-  console.log("echo singleLogoutPath is already set for id: " + id + ". Contains: " + smaugObject.config.singleLogoutPath);
-  process.exit(1);
+  console.log("echo " + updateObjectKey + " is already set for id: " + id + ". Contains: " + smaugObject.config[updateObjectKey]);
 }
 
 
