@@ -3,7 +3,8 @@ describe('Oauth flow', () => {
   const baseurl = Cypress.env('oAuthUrl');
 
   const clients = {
-    invalid: {user: 'user', pass: 'wrong'}
+    invalid: {user: 'user', pass: 'wrong'},
+    allowAll: {user: 'user', pass: 'wrong', auth: 'allowAll'}
   };
   const users = {
     anonymous: {
@@ -25,6 +26,11 @@ describe('Oauth flow', () => {
       grant_type: 'password',
       username: userEncode('0102033690', '790900'),
       password: '0000'
+    },
+    invalid: {
+      grant_type: 'password',
+      username: userEncode('0102033690', '790900'),
+      password: 'wrong'
     }
   };
   before(() => {
@@ -43,10 +49,10 @@ describe('Oauth flow', () => {
     });
   });
 
-  const getToken = (creds, auth) =>
+  const getToken = (creds, auth, url = baseurl) =>
     cy.request({
       method: 'POST',
-      url: `${baseurl}/oauth/token`,
+      url: `${url}/oauth/token`,
       auth,
       body: creds,
       failOnStatusCode: false,
@@ -104,9 +110,16 @@ describe('Oauth flow', () => {
         .should('have.all.keys', 'token_type', 'access_token', 'expires_in');
     });
 
-    it('should not return a token when given an invalid password', () => {});
-    it('should pick auth-backend based on the client id (allow all)', () => {});
-    it('should pick auth-backend based on the client id (deny all)', () => {});
+    it('should not return a token when given an invalid password', () => {
+      getToken(users.invalid, clients.regular).then(res => {
+        cy.wrap(res)
+          .its('status')
+          .should('equal', 400);
+        cy.wrap(res)
+          .its('body.error_description')
+          .should('equal', 'User credentials are invalid');
+      });
+    });
   });
 
   describe('Configuration endpoints', () => {

@@ -2,6 +2,40 @@ describe('Test admin application', () => {
   const baseurl = Cypress.env('adminUrl');
   const pass = 'admin';
   const user = 'admin';
+
+  const client = {
+    name: 'a-client',
+    config: {},
+    contact: {owner: {name: '', phone: '', email: ''}}
+  };
+
+  const request = (method, endpoint, body) =>
+    cy.request({
+      url: `${baseurl}${endpoint}`,
+      method: method,
+      auth: {
+        user,
+        pass
+      },
+      body,
+      failOnStatusCode: false
+    });
+  const getClients = () => request('GET', '/clients').its('body');
+  const addClient = client => request('POST', '/clients', client);
+
+  const updateClient = (clientId, client) =>
+    request('PUT', `/clients/${clientId}`, client).its('body');
+  const getClient = clientId =>
+    request('GET', `/clients/${clientId}`).its('body');
+  const deleteClient = client => request('DELETE', `/clients/${client.id}`);
+  const getToken = (client, user) =>
+    request('POST', `/clients/token/${client.id}`, user);
+  const reset = () => getClients().each(deleteClient);
+
+  beforeEach(() => {
+    reset();
+  });
+
   describe('auth', function() {
     it('should respond with 200 on homepage without credentials', () => {
       cy.request({url: baseurl})
@@ -53,35 +87,6 @@ describe('Test admin application', () => {
   });
 
   describe('clients', function() {
-    const client = {
-      name: 'a-client',
-      config: {},
-      contact: {owner: {name: '', phone: '', email: ''}}
-    };
-
-    const request = (method, endpoint, body) =>
-      cy.request({
-        url: `${baseurl}${endpoint}`,
-        method: method,
-        auth: {
-          user,
-          pass
-        },
-        body
-      });
-    const getClients = () => request('GET', '/clients').its('body');
-    const addClient = client => request('POST', '/clients', client);
-
-    const updateClient = (clientId, client) =>
-      request('PUT', `/clients/${clientId}`, client).its('body');
-    const getClient = clientId =>
-      request('GET', `/clients/${clientId}`).its('body');
-    const deleteClient = client => request('DELETE', `/clients/${client.id}`);
-    const reset = () => getClients().each(deleteClient);
-
-    beforeEach(() => {
-      reset();
-    });
     it('should respond with empty body', () => {
       getClients().should('deep.equal', []);
     });
@@ -126,6 +131,39 @@ describe('Test admin application', () => {
       getClients()
         .should('have.length', 2)
         .each(c => expect(['client 2', client.name]).to.contain(c.name));
+    });
+  });
+  describe('request token through admin token endpoint /clients/token/:clientId', () => {
+    it('Should provide token for anonumous user', async done => {
+      const {body} = await addClient(client);
+
+      await getToken(body, {username: '@', password: '@'})
+        .its('body')
+        .should('have.all.keys', 'token_type', 'access_token', 'expires_in')
+        .then(() => done());
+    });
+    it('Should provide token for authenticated user', async done => {
+      const {body} = await addClient(client);
+
+      await getToken(body, {username: '0102033690@790900', password: '0000'})
+        .its('body')
+        .should('have.all.keys', 'token_type', 'access_token', 'expires_in')
+        .then(() => done());
+    });
+    it('Should fail to provide token for invalid user', async done => {
+      const {body} = await addClient(client);
+
+      await getToken(body, {username: '0102033690@790900', password: 'wrong'})
+        .its('body.error_description')
+        .should('equal', 'User credentials are invalid')
+        .then(() => done());
+    });
+    it('Should provide token for user without password', async done => {
+      const {body} = await addClient(client);
+      await getToken(body, {username: 'some_valid_user'})
+        .its('body')
+        .should('have.all.keys', 'token_type', 'access_token', 'expires_in')
+        .then(() => done());
     });
   });
 });
