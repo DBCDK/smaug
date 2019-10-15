@@ -22,8 +22,7 @@ if (config.datasources && config.datasources.redis.uri) {
 }
 
 function loadBackend(storeName, storeConfig) {
-  const storeBackend =
-    (!config.mock_externals.db && storeConfig.backend) || 'inmemory';
+  const storeBackend = storeConfig.backend || 'inmemory';
   storeConfig.config.backend = config.datasources[storeBackend];
   const store = require('./oauth/' +
     storeName.toLowerCase() +

@@ -13,17 +13,17 @@ describe('Oauth flow', () => {
     },
     library: {
       grant_type: 'password',
-      username: userEncode('', 12345),
-      password: userEncode('', 12345)
+      username: userEncode('', 790900),
+      password: userEncode('', 790900)
     },
     isil: {
       grant_type: 'password',
-      username: userEncode('', 'DK-12345'),
-      password: userEncode('', 'DK-12345')
+      username: userEncode('', 'DK-790900'),
+      password: userEncode('', 'DK-790900')
     },
     authenticated: {
       grant_type: 'password',
-      username: userEncode('0102033690', 'DK-790900'),
+      username: userEncode('0102033690', '790900'),
       password: '0000'
     }
   };
@@ -33,7 +33,11 @@ describe('Oauth flow', () => {
         name: 'regular'
       }
     ].forEach(client => {
-      cy.createClient({}).then(res => {
+      cy.createClient({
+        name: client.name,
+        config: {},
+        contact: {owner: {name: '', phone: '', email: ''}}
+      }).then(res => {
         clients[client.name] = {user: res.id, pass: res.secret};
       });
     });
@@ -94,7 +98,7 @@ describe('Oauth flow', () => {
         .its('body')
         .should('have.all.keys', 'token_type', 'access_token', 'expires_in');
     });
-    it.skip('should return a token when logging in with password', () => {
+    it('should return a token when logging in with password', () => {
       getToken(users.authenticated, clients.regular)
         .its('body')
         .should('have.all.keys', 'token_type', 'access_token', 'expires_in');
