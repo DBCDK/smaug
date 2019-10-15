@@ -2,6 +2,7 @@
 
 import {log, userDecode} from '../../utils';
 import BorchkServiceClient from 'dbc-node-borchk';
+import appConfig from '../../config/config';
 
 export default class UserStore {
   static requiredOptions() {
@@ -10,7 +11,6 @@ export default class UserStore {
 
   constructor(stores, config = {}) {
     this.config = config;
-
     this.borchkClient = new BorchkServiceClient({
       wsdl: this.config.wsdl,
       serviceRequester: this.config.serviceRequester
@@ -34,6 +34,15 @@ export default class UserStore {
       userPincode: password,
       libraryCode: 'DK-' + user.libraryId
     };
+
+    // Due to changes in borchk 2.5 response when using library 190101 have changed
+    // This fixes that issue.
+    if (
+      username === `@${appConfig.defaultLibraryId}` &&
+      username === password
+    ) {
+      return Promise.resolve({id: username});
+    }
 
     return this.borchkClient
       .getBorrowerCheckResult(borchkRequest)
