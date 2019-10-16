@@ -12,7 +12,7 @@ services:
       - BABEL_CACHE_PATH=~/app/babel.cache.json
     depends_on:
       - database
-    command: bash -c 'npm run migrate; npm run start'
+    command: bash -c 'while !</dev/tcp/database/5432; do sleep 1; done; npm run migrate; npm run start'
   e2e:
     ipc: host ## Prevent Docker Crash in Cypress (https://github.com/cypress-io/cypress/issues/350)
     image: docker.dbc.dk/cypress:latest

@@ -5,6 +5,7 @@ FROM  $NODE_BASEIMAGE AS build
 WORKDIR /home/node/app
 # copy project file
 COPY src/ src/
+COPY fixtures/ fixtures/
 COPY test/ test/
 COPY .babelrc .
 COPY .eslintrc .
@@ -24,6 +25,7 @@ RUN mkdir prod_build && \
 # build statics
 #RUN npm run build && \
 RUN cp -R --preserve=links src prod_build/src && \
+  cp -R --preserve=links fixtures prod_build/fixtures && \
   cp -R package.json prod_build/package.json && \
   cp -R .babelrc prod_build/.babelrc
 
