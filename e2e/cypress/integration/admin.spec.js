@@ -91,27 +91,26 @@ describe('Test admin application', () => {
       getClients().should('deep.equal', []);
     });
 
-    it('should create a client', async () => {
-      const {body} = await addClient(client).should(
-        'have.all.keys',
-        'id',
-        'secret'
-      );
-      getClient(body.id)
+    it('should create a client', () => {
+      addClient(client)
         .its('body')
-        .should('have.all.keys', 'name', 'config', 'contacts')
-        .its('name')
-        .should('equal', body.name);
+        .then(res => {
+          getClient(res.id)
+            .its('name')
+            .should('equal', res.name);
+        });
     });
 
-    it('should update a client', async done => {
-      const {body} = await addClient(client);
-      const updatedClient = {...client, name: 'an updated client'};
-      updateClient(body.id, updatedClient);
-      getClient(body.id)
-        .its('name')
-        .should('equal', updatedClient.name)
-        .then(() => done());
+    it('should update a client', () => {
+      addClient(client)
+        .its('body')
+        .then(res => {
+          const updatedClient = {...client, name: 'an updated client'};
+          updateClient(res.id, updatedClient);
+          getClient(res.id)
+            .its('name')
+            .should('equal', updatedClient.name);
+        });
     });
 
     it('should delete a client', () => {
@@ -134,36 +133,56 @@ describe('Test admin application', () => {
     });
   });
   describe('request token through admin token endpoint /clients/token/:clientId', () => {
-    it('Should provide token for anonumous user', async done => {
-      const {body} = await addClient(client);
-
-      await getToken(body, {username: '@', password: '@'})
+    it('Should provide token for anonumous user', () => {
+      addClient(client)
         .its('body')
-        .should('have.all.keys', 'token_type', 'access_token', 'expires_in')
-        .then(() => done());
+        .then(res => {
+          getToken(res, {username: '@', password: '@'})
+            .its('body')
+            .should(
+              'have.all.keys',
+              'token_type',
+              'access_token',
+              'expires_in'
+            );
+        });
     });
-    it('Should provide token for authenticated user', async done => {
-      const {body} = await addClient(client);
-
-      await getToken(body, {username: '0102033690@790900', password: '0000'})
+    it('Should provide token for authenticated user', () => {
+      addClient(client)
         .its('body')
-        .should('have.all.keys', 'token_type', 'access_token', 'expires_in')
-        .then(() => done());
+        .then(res => {
+          getToken(res, {username: '0102033690@790900', password: '0000'})
+            .its('body')
+            .should(
+              'have.all.keys',
+              'token_type',
+              'access_token',
+              'expires_in'
+            );
+        });
     });
-    it('Should fail to provide token for invalid user', async done => {
-      const {body} = await addClient(client);
-
-      await getToken(body, {username: '0102033690@790900', password: 'wrong'})
-        .its('body.error_description')
-        .should('equal', 'User credentials are invalid')
-        .then(() => done());
-    });
-    it('Should provide token for user without password', async done => {
-      const {body} = await addClient(client);
-      await getToken(body, {username: 'some_valid_user'})
+    it('Should fail to provide token for invalid user', () => {
+      addClient(client)
         .its('body')
-        .should('have.all.keys', 'token_type', 'access_token', 'expires_in')
-        .then(() => done());
+        .then(res => {
+          getToken(res, {username: '0102033690@790900', password: 'wrong'})
+            .its('body.error_description')
+            .should('equal', 'User credentials are invalid');
+        });
+    });
+    it('Should provide token for user without password', () => {
+      addClient(client)
+        .its('body')
+        .then(res => {
+          getToken(res, {username: 'some_valid_user'})
+            .its('body')
+            .should(
+              'have.all.keys',
+              'token_type',
+              'access_token',
+              'expires_in'
+            );
+        });
     });
   });
 });
