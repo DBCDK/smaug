@@ -14,11 +14,13 @@ def DOCKER_NAME = "${DOCKER_REPO}/${CONTAINER_NAME}:${BUILD_NUMBER}"
 def DOCKER_COMPOSE_NAME = "compose-${DOCKER_NAME}"
 def DOCKER_STATUS = ''
 def GITLAB_ID = "380"
-def GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
 pipeline {
     agent {
         label 'devel9-head'
     }
+    environment {
+		GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
+	}
     stages {
         stage('Test and build image') {
             steps {
@@ -78,7 +80,7 @@ pipeline {
 						source auto-committer-env/bin/activate
 						pip install -U pip
 						pip install git+https://github.com/DBCDK/kube-deployment-auto-committer#egg=deployversioner
-						set-new-version configuration.yaml ${GITLAB_PRIVATE_TOKEN} ${GITLAB_ID} ${BUILD_NUMBER} -b staging
+						set-new-version configuration.yaml ${env.GITLAB_PRIVATE_TOKEN} ${GITLAB_ID} ${BUILD_NUMBER} -b staging
 					"""
 				}
 			}
