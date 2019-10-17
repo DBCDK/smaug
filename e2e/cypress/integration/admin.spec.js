@@ -49,7 +49,7 @@ describe('Test admin application', () => {
         .should('equal', 401);
     });
 
-    it('hould respond with 401 with wrong username', () => {
+    it('should respond with 401 with wrong username', () => {
       cy.request({
         url: `${baseurl}/clients`,
         failOnStatusCode: false,
