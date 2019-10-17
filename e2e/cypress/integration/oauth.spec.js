@@ -1,6 +1,7 @@
 describe('Oauth flow', () => {
   const userEncode = (userId, libraryId) => `${userId}@${libraryId}`;
   const baseurl = Cypress.env('oAuthUrl');
+  const baseConfigUrl = Cypress.env('configUrl');
 
   const clients = {
     invalid: {user: 'user', pass: 'wrong'},
@@ -58,6 +59,16 @@ describe('Oauth flow', () => {
       failOnStatusCode: false,
       form: true
     });
+
+  const getConfiguration = token =>
+    cy.request({
+      url: `${baseConfigUrl}/configuration`,
+      qs: {
+        token
+      },
+      failOnStatusCode: false
+    });
+
   describe('oAuth endpoints', () => {
     it('should respond with 200 on /', () => {
       cy.request(baseurl)
@@ -123,7 +134,44 @@ describe('Oauth flow', () => {
   });
 
   describe('Configuration endpoints', () => {
-    it('should respond with 200 on /');
-    it('should return configuration when queried for it with a token');
+    it('should respond with 200 on /', () => {
+      cy.request(baseConfigUrl)
+        .its('status')
+        .should('equal', 200);
+    });
+
+    it('should fail when using invalid token', () => {
+      getConfiguration('invalid_token')
+        .its('status')
+        .should('equal', 404);
+    });
+
+    it('should return configuration when queried for it with a token', () => {
+      getToken(users.authenticated, clients.regular)
+        .its('body')
+        .then(res => {
+          getConfiguration(res.access_token)
+            .its('body')
+            .should(
+              'contain.keys',
+              'app',
+              'attributes',
+              'identityProviders',
+              'netpunkt',
+              'services',
+              'user'
+            )
+            .its('user')
+            .should('deep.equal', {
+              agency: '790900',
+              id: '0102033690',
+              isil: 'DK-790900',
+              libraryId: '790900',
+              salt: 'xxx',
+              uniqueId: null,
+              pin: '0000'
+            });
+        });
+    });
   });
 });
