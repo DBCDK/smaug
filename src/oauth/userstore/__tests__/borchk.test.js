@@ -4,6 +4,7 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import UserStore from '../borchk';
 import {userEncode} from '../../../utils';
+import './borchk.fixtures';
 
 chai.use(chaiAsPromised);
 chai.should();
@@ -21,7 +22,7 @@ describe('borchk', function() {
     );
   });
 
-  xit('should succeed with anonymous credentials', function() {
+  it('should succeed with anonymous credentials', function() {
     var username = userEncode('716500', null);
     var password = username;
     var user = userStore.getUser(username, password);

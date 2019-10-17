@@ -21,15 +21,17 @@ let pgModels;
 var backends = {
   inmemory: () => {
     return new InmemoryTokenStore();
-  },
-  redis: () => {
+  }
+};
+
+if (process.env.REDIS) {
+  backends.redis = () => {
     return new RedisTokenStore(
       {},
       {backend: {redisClient: redis.createClient()}}
     );
-  }
-};
-
+  };
+}
 if (process.env.DATABASE_URI) {
   pgModels = models();
   backends.postgres = () => {

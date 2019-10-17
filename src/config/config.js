@@ -1,4 +1,4 @@
-module.exports = {
+const config = {
   ports: {
     oAuth: process.env.PORT_OAUTH || process.env.PORT,
     admin: process.env.PORT_ADMIN,
@@ -12,7 +12,9 @@ module.exports = {
     passwordAut: process.env.CULR_PASSWORD_AUT
   },
   mock_externals: {
-    culr: process.env.MOCK_CULR || 0
+    culr: process.env.MOCK_CULR || 0,
+    db: process.env.MOCK_DB || 0,
+    borchk: process.env.MOCK_BORCHK || 0
   },
   datasources: {
     postgres: {
@@ -24,7 +26,9 @@ module.exports = {
     inmemory: {}
   },
   admin: {
-    users: JSON.parse(process.env.ADMIN_USERS)
+    users: (process.env.ADMIN_USERS && JSON.parse(process.env.ADMIN_USERS)) || {
+      admin: 'admin'
+    }
   },
 
   storePasswordsInRedis: {
@@ -45,14 +49,6 @@ module.exports = {
       config: {
         wsdl: process.env.BORCHK_WSDL,
         serviceRequester: process.env.SERVICE_REQUESTER
-      }
-    },
-    test: {
-      backend: 'inmemory',
-      config: {
-        users: {
-          'donald@test': 'duck'
-        }
       }
     },
     allowAll: {
@@ -143,3 +139,5 @@ module.exports = {
     }
   }
 };
+
+module.exports = config;

@@ -4,7 +4,8 @@
   "description": "Smaug is the authentication part of https://github.com/DBCDK/serviceprovider",
   "main": "src/main.js",
   "scripts": {
-    "dev": "nodemon -r dotenv/config src/main.js",
+    "dev": "nodemon -r dotenv/config src/main.js --watch src/",
+    "dev:test": "nodemon -r dotenv/config src/main.js dotenv_config_path=./test/test.env --watch src/",
     "lint": "eslint ./src",
     "lint:checkstyle": "eslint ./src -o report.xml -f checkstyle",
     "migrate": "sequelize db:migrate --migrations-path ./src/migrations --url \"$DATABASE_URI\"",
@@ -12,7 +13,9 @@
     "sequelize": "sequelize",
     "start": "node src/main.js",
     "test": "LOG_LEVEL=off mocha --require babel-core/register --recursive src/**/__tests__/* --exit",
-    "testverbose": "LOG_LEVEL=debug mocha --require babel-core/register --recursive src/**/__tests__/*"
+    "test:verbose": "LOG_LEVEL=debug mocha --require babel-core/register --recursive src/**/__tests__/*",
+    "cy:run": "npx cypress run --project ./e2e",
+    "cy:open": "npx cypress@latest open --project ./e2e"
   },
   "repository": {
     "type": "git",
@@ -39,6 +42,7 @@
     "express": "^4.17.1",
     "http-errors": "^1.4.0",
     "lodash": "^4.17.15",
+    "nock": "^11.4.0",
     "moment": "^2.12.0",
     "node-cache": "^3.2.1",
     "oauth2-server": "^2.4.1",
