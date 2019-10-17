@@ -1,5 +1,7 @@
 version: '3'
 services:
+  redis:
+    image: redis:5.0.6
   database:
     image: postgres:9.6
     environment:
@@ -9,9 +11,10 @@ services:
     env_file: ./test/test.env
     environment:
       - DATABASE_URI=postgres://smaug@database/smaug
-      - BABEL_CACHE_PATH=~/app/babel.cache.json
+      - REDIS=redis://redis
     depends_on:
       - database
+      - redis
     command: bash -c 'while !</dev/tcp/database/5432; do sleep 1; done; npm run migrate; npm run start'
   e2e:
     ipc: host ## Prevent Docker Crash in Cypress (https://github.com/cypress-io/cypress/issues/350)

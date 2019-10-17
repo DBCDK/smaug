@@ -35,6 +35,7 @@ RUN npm run test && npm run lint
 #
 # ---- Release ----
 FROM $NODE_BASEIMAGE AS release
+ENV  BABEL_CACHE_PATH=~/app/babel.cache.json
 WORKDIR /home/node/app
 COPY --chown=node:node --from=build /home/node/app/prod_build ./
 EXPOSE 3000
