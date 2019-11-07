@@ -14,7 +14,7 @@ fi
 smaugUserPwd=$1
 smaugAdminUrl=$2
 idsFile=$3
-bibFile=$4
+colorFile=$4
 
 echo "#!/usr/bin/env bash"
 echo ""
@@ -24,9 +24,19 @@ for id in $ids
 do
     #echo "echo update client data for id: $id"
     smaugObject=$(curl -X GET --user $smaugUserPwd $smaugAdminUrl/clients/${id} 2>/dev/null)
-#    echo smaugObject: $smaugObject #test that an object is collected
-#    displayName=$(echo $smaugObject | json_pp | grep displayName | cut -d '"' -f4)
-    bibArr=$(cat $bibFile | grep "$id" | cut -d "," -f2,7-10)
-#    echo "$bibArr"
-    ./updateSmaugClients.js -o "$smaugObject" -p $smaugUserPwd -s $smaugAdminUrl -b "$bibArr"
+    #echo smaugObject: $smaugObject #test that an object is collected
+    displayName=$(echo $smaugObject | json_pp | grep displayName | cut -d '"' -f4)
+    #agencyId=$(echo $smaugObject | json_pp | grep agencyId | cut -d '"' -f4)
+    for line in $(cat $colorFile)
+    do
+        bibName=$(echo $line | cut -d "," -f1)
+        count=$(echo $displayName | grep "$bibName" -c)
+        if [ $count -gt 0 ]
+        then
+            logoColor=$(echo $line | cut -d "," -f2)
+            #echo $agencyId - $bibName - $logoColor - $displayName
+            ./updateSmaugClients.js -o "$smaugObject" -p $smaugUserPwd -s $smaugAdminUrl -c "$logoColor"
+            break
+        fi
+    done
 done
