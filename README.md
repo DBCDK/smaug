@@ -1,7 +1,5 @@
 # Smaug
 
-[![Build Status](https://travis-ci.org/DBCDK/smaug.svg?branch=master)](https://travis-ci.org/DBCDK/smaug)
-
 Smaug is a system for granting OAuth2 access tokens, and mapping them to JSON-formatted configuration objects.
 
 ## Setup development environment
