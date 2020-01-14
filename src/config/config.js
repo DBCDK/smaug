@@ -86,17 +86,21 @@ const config = {
           moreinfo: 'https://moreinfo.addi.dk/2.11/',
           openagency: 'https://openagency.addi.dk/2.34/',
           openholdingstatus: 'https://openholdingstatus.addi.dk/3.0/',
-          openorder: 'https://openorder.addi.dk/2.8/',
-          opensearch: 'https://opensearch.addi.dk/b3.5_5.0/',
-          openuserstatus: 'https://openuserstatus.addi.dk/1.6.1/',
+          openformat:
+            'http://openformat-php-develop.frontend-staging.svc.cloud.dbc.dk/server.php',
+          openorder: 'https://openorder.addi.dk/3.0',
+          opensearch: 'https://opensearch.addi.dk/b3.5_5.2/',
+          openuserstatus: 'https://openuserstatus.addi.dk/1.9/',
           rank: 'https://xptest.dbc.dk/ms/rank/v1',
           suggestpopular: 'http://xptest.dbc.dk/ms/entity-pop/v1',
           suggestcreator: 'http://xptest.dbc.dk/ms/entity-suggest/v1/creator',
           suggestlibrary: 'http://xptest.dbc.dk/ms/entity-suggest/v1/library',
           suggestsubject: 'http://xptest.dbc.dk/ms/entity-suggest/v1/subject',
-          suggest: 'http://ortograf.mcp1-proxy.dbc.dk/ortograf/',
-          recommend: 'http://recomole.mcp1-proxy.dbc.dk/recomole/loan-cosim',
-          performance: 'https://elk-p01.dbc.dk:9100/prod_ux-*/',
+          suggest:
+            'http://ortograf-service-1-0.mi-prod.svc.cloud.dbc.dk/ortograf/',
+          recommend:
+            'http://recomole-1-0.mi-prod.svc.cloud.dbc.dk/recomole/loan-cosim',
+          performance: 'https://elk-p01.dbc.dk:9100/k8s-frontend-prod-*/',
           recommendurls: {
             default: 'https://xptest.dbc.dk/ms/recommend-cosim/v1',
             popular: 'https://xptest.dbc.dk/ms/recommend-pop/v1'
