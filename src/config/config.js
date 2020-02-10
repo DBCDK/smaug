@@ -87,7 +87,7 @@ const config = {
           openagency: 'https://openagency.addi.dk/2.34/',
           openholdingstatus: 'https://openholdingstatus.addi.dk/3.0/',
           openformat:
-            'http://openformat-php-develop.frontend-staging.svc.cloud.dbc.dk/server.php',
+            'http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php',
           openorder: 'https://openorder.addi.dk/3.0',
           opensearch: 'https://opensearch.addi.dk/b3.5_5.2/',
           openuserstatus: 'https://openuserstatus.addi.dk/1.9/',
