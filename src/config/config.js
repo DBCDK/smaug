@@ -126,6 +126,10 @@ const config = {
           orderpolicyrequester: '190101',
           orderSystem: 'bibliotekdk'
         },
+        urls: {
+          host: 'https://login.bib.dk',
+          returnUrl: '/example/'
+        },
         attributes: {
           uniqueId: {
             name: 'bruger ID',
