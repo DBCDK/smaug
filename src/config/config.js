@@ -90,7 +90,7 @@ const config = {
             'http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php',
           openorder: 'https://openorder.addi.dk/3.0',
           opensearch: 'https://opensearch.addi.dk/b3.5_5.2/',
-          openuserstatus: 'https://openuserstatus.addi.dk/1.9/',
+          openuserstatus: 'https://openuserstatus.addi.dk/2.0/',
           rank: 'https://xptest.dbc.dk/ms/rank/v1',
           suggestpopular: 'http://xptest.dbc.dk/ms/entity-pop/v1',
           suggestcreator: 'http://xptest.dbc.dk/ms/entity-suggest/v1/creator',
