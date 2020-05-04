@@ -100,7 +100,7 @@ const config = {
             'http://ortograf-service-1-0.mi-prod.svc.cloud.dbc.dk/ortograf/',
           recommend:
             'http://recomole-1-0.mi-prod.svc.cloud.dbc.dk/recomole/loan-cosim',
-          performance: 'https://elk-p01.dbc.dk:9100/k8s-frontend-prod-*/',
+          performance: 'https://elk.dbc.dk:9100/k8s-frontend-prod-*/',
           recommendurls: {
             default: 'https://xptest.dbc.dk/ms/recommend-cosim/v1',
             popular: 'https://xptest.dbc.dk/ms/recommend-pop/v1'
