@@ -6,6 +6,7 @@ services:
     image: postgres:9.6
     environment:
       - POSTGRES_USER=smaug
+      - POSTGRES_HOST_AUTH_METHOD=trust
   web:
     image: '${IMAGE:-docker-ux.dbc.dk/smaug-master:latest}'
     env_file: ./test/test.env
