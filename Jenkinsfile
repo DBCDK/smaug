@@ -91,9 +91,12 @@ pipeline {
             script {
                 sh """
                     echo Clean up
+                    mkdir -p logs
+                    docker-compose -f docker-compose-cypress.yml -p ${DOCKER_COMPOSE_NAME} logs web > logs/web-log.txt
                     docker-compose -f docker-compose-cypress.yml -p ${DOCKER_COMPOSE_NAME} down -v
                     docker image rm $DOCKER_NAME
                 """
+                archiveArtifacts 'e2e/cypress/screenshots/*, e2e/cypress/videos/*, logs/*'
                 junit 'e2e/reports/*.xml'
             }
         }
