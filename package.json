@@ -4,6 +4,7 @@
   "description": "Smaug is the authentication part of https://github.com/DBCDK/serviceprovider",
   "main": "src/main.js",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "dev": "nodemon -r dotenv/config src/main.js --watch src/",
     "dev:test": "nodemon -r dotenv/config src/main.js dotenv_config_path=./test/test.env --watch src/",
     "lint": "eslint ./src",
@@ -62,11 +63,14 @@
     "chance": "^1.0.0",
     "dotenv": "^8.0.0",
     "eslint": "^4.19.1",
-    "mocha": "^6.2.0",
-    "nodemon": "^1.19.1",
+    "mocha": "^7.1.2",
+    "nodemon": "^2.0.3",
     "prettier": "^1.17.0",
     "sequelize-fixtures": "^1.0.2",
     "sinon": "^1.17.3",
     "supertest": "^3.4.2"
+  },
+  "resolutions": {
+    "lodash": "^4.17.14"
   }
 }
