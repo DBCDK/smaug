@@ -85,7 +85,7 @@ const config = {
           ddbcmsapi: 'https://cmscontent.dbc.dk/',
           moreinfo: 'https://moreinfo.addi.dk/2.11/',
           openagency: 'https://openagency.addi.dk/2.34/',
-          openholdingstatus: 'https://openholdingstatus.addi.dk/3.0/',
+          openholdingstatus: 'https://openholdingstatus.addi.dk/3.1/',
           openformat:
             'http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php',
           openorder: 'https://openorder.addi.dk/3.0',
