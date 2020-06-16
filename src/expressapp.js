@@ -154,7 +154,7 @@ function ensureClientEnabled(req, res, next) {
       .get('stores')
       .tokenStore.getAccessToken(bearerToken)
       .then(tokenInfo => handleClient(tokenInfo.clientId))
-      .catch(e => {
+      .catch(() => {
         next();
       });
   } else if (clientCredentials) {
