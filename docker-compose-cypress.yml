@@ -8,7 +8,7 @@ services:
       - POSTGRES_USER=smaug
       - POSTGRES_HOST_AUTH_METHOD=trust
   web:
-    image: '${IMAGE:-docker-ux.dbc.dk/smaug-master:34}'
+    image: '${IMAGE:-docker-ux.dbc.dk/smaug-master:latest}'
     env_file: ./test/test.env
     environment:
       - DATABASE_URI=postgres://smaug@database/smaug
