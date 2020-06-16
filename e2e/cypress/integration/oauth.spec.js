@@ -38,12 +38,14 @@ describe('Oauth flow', () => {
     [
       {
         name: 'regular'
-      }
+      },
+      {name: 'disabled', enabled: false}
     ].forEach(client => {
       cy.createClient({
         name: client.name,
         config: {},
-        contact: {owner: {name: '', phone: '', email: ''}}
+        contact: {owner: {name: '', phone: '', email: ''}},
+        enabled: client.enabled
       }).then(res => {
         clients[client.name] = {user: res.id, pass: res.secret};
       });
@@ -131,6 +133,16 @@ describe('Oauth flow', () => {
           .should('equal', 'User credentials are invalid');
       });
     });
+    it('should not return a token when client is disabled', () => {
+      getToken(users.anonymous, clients.disabled).then(res => {
+        cy.wrap(res)
+          .its('status')
+          .should('equal', 403);
+        cy.wrap(res)
+          .its('body.error_description')
+          .should('equal', 'Client is disabled');
+      });
+    });
   });
 
   describe('Configuration endpoints', () => {
@@ -172,6 +184,38 @@ describe('Oauth flow', () => {
               pin: '0000'
             });
         });
+    });
+
+    it('should not return configuration when client is disabled', () => {
+      // client needs to be enabled at first, to get access token
+      const client = {
+        name: 'some client',
+        config: {},
+        contact: {owner: {name: '', phone: '', email: ''}},
+        enabled: true
+      };
+      cy.createClient(client).then(res => {
+        const clientCredentials = {user: res.id, pass: res.secret};
+        getToken(users.anonymous, clientCredentials)
+          .its('body')
+          .then(res => {
+            // now we got the access token, so disable client
+            cy.updateClient(clientCredentials.user, {
+              ...client,
+              enabled: false
+            }).then(() => {
+              // and then fail fetching the configuration
+              getConfiguration(res.access_token).then(clientRes => {
+                cy.wrap(clientRes)
+                  .its('status')
+                  .should('equal', 403);
+                cy.wrap(clientRes)
+                  .its('body.error_description')
+                  .should('equal', 'Client is disabled');
+              });
+            });
+          });
+      });
     });
   });
 });

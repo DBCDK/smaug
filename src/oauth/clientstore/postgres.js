@@ -12,6 +12,14 @@ export default class PostgresClientStore extends ClientStore {
       return Promise.reject('name must be a string.');
     }
 
+    // Check that the enabled is a boolean.
+    // set default value to true
+    if (typeof client.enabled === 'undefined') {
+      client.enabled = true;
+    } else if (typeof client.enabled !== 'boolean') {
+      return Promise.reject('enabled must be a boolean.');
+    }
+
     // Check that we get an object
     if (client.config && typeof client.config !== 'object') {
       return Promise.reject('config must be an object');
@@ -95,7 +103,7 @@ export default class PostgresClientStore extends ClientStore {
         });
       }
 
-      const requiredAttributes = ['name', 'config', 'contact'];
+      const requiredAttributes = ['name', 'config', 'contact', 'enabled'];
       const errors = [];
       errors.concat(
         requiredAttributes

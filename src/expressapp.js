@@ -52,7 +52,11 @@ function createBasicApp(config) {
             remoteAddress: req.ip
           },
           response: {status: res.statusCode},
-          time: {start: timeStart, end: timeEnd, taken: timeEnd.diff(timeStart)}
+          time: {
+            start: timeStart,
+            end: timeEnd,
+            taken: timeEnd.diff(timeStart)
+          }
         })
       );
     });
@@ -116,8 +120,53 @@ function createBasicApp(config) {
   return app;
 }
 
+/*
+ * Middleware that rejects the request
+ * if client is disabled.
+ *
+ * It will look up the client based on either
+ * a token or client credentials in the request.
+ *
+ * Note that if the client can't be found,
+ * the request is passed on to let another
+ * middleware handle the invalid request
+ */
+
+function ensureClientEnabled(req, res, next) {
+  const bearerToken = req.query.token;
+  const clientCredentials = basicAuth(req);
+  const handleClient = clientid => {
+    return req.app
+      .get('stores')
+      .clientStore.get(clientid)
+      .then(client => {
+        if (client.enabled === false) {
+          return res
+            .status(403)
+            .json({error_description: 'Client is disabled'});
+        }
+        next();
+      })
+      .catch(() => next());
+  };
+  if (bearerToken) {
+    return req.app
+      .get('stores')
+      .tokenStore.getAccessToken(bearerToken)
+      .then(tokenInfo => handleClient(tokenInfo.clientId))
+      .catch(e => {
+        next();
+      });
+  } else if (clientCredentials) {
+    return handleClient(clientCredentials.name);
+  }
+  next();
+}
+
 export function createConfigurationApp(config) {
   const app = createBasicApp(config);
+
+  app.use('/configuration', ensureClientEnabled);
 
   app.get('/configuration', (req, res, next) => {
     const bearerToken = req.query.token;
@@ -162,7 +211,9 @@ export function createConfigurationApp(config) {
                     );
                   }
 
-                  const insecureUser = Object.assign({}, user, {pin: redisRes});
+                  const insecureUser = Object.assign({}, user, {
+                    pin: redisRes
+                  });
                   res.json(Object.assign({}, userConfig, {user: insecureUser}));
                 }
               );
@@ -276,6 +327,7 @@ export function createOAuthApp(config = {}) {
 
     next();
   });
+  app.use('/oauth/token', ensureClientEnabled);
   app.post('/oauth/token', app.oauth.grant());
   app.delete('/oauth/token/:token', handleRevokeToken);
   app.delete('/oauth/tokens', handleRevokeTokensForUser);
@@ -363,7 +415,8 @@ export function createAdminApp(config = {}) {
       const client = {
         name: req.body.name,
         config: req.body.config,
-        contact: req.body.contact
+        contact: req.body.contact,
+        enabled: req.body.enabled
       };
 
       app
@@ -397,12 +450,11 @@ export function createAdminApp(config = {}) {
       const clientId = req.params.clientId;
       const client = {};
 
-      ['name', 'config', 'contact'].forEach(field => {
-        if (req.body[field]) {
+      ['name', 'config', 'contact', 'enabled'].forEach(field => {
+        if (typeof req.body[field] !== 'undefined') {
           client[field] = req.body[field];
         }
       });
-
       app
         .get('stores')
         .clientStore.update(clientId, client)

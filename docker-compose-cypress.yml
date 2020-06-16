@@ -8,7 +8,7 @@ services:
       - POSTGRES_USER=smaug
       - POSTGRES_HOST_AUTH_METHOD=trust
   web:
-    image: '${IMAGE:-docker-ux.dbc.dk/smaug-master:latest}'
+    image: '${IMAGE:-docker-ux.dbc.dk/smaug-master:34}'
     env_file: ./test/test.env
     environment:
       - DATABASE_URI=postgres://smaug@database/smaug
@@ -16,7 +16,7 @@ services:
     depends_on:
       - database
       - redis
-    command: bash -c 'while !</dev/tcp/database/5432; do sleep 1; done; npm run migrate; npm run start'
+    command: bash -c 'while !</dev/tcp/database/5432; do sleep 1; done; npm run start'
   e2e:
     ipc: host ## Prevent Docker Crash in Cypress (https://github.com/cypress-io/cypress/issues/350)
     image: docker.dbc.dk/cypress:latest
