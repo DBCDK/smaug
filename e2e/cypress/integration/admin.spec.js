@@ -197,5 +197,19 @@ describe('Test admin application', () => {
             );
         });
     });
+    it('Should fail to provide token when client is disabled', () => {
+      addClient({...client, enabled: false})
+        .its('body')
+        .then(res => {
+          getToken(res, {username: '@', password: '@'}).then(res => {
+            cy.wrap(res)
+              .its('status')
+              .should('equal', 403);
+            cy.wrap(res)
+              .its('body.error_description')
+              .should('equal', 'Client is disabled');
+          });
+        });
+    });
   });
 });

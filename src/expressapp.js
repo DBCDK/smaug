@@ -125,7 +125,8 @@ function createBasicApp(config) {
  * if client is disabled.
  *
  * It will look up the client based on either
- * a token or client credentials in the request.
+ * clientId given as param, a token,
+ * or client credentials in the request.
  *
  * Note that if the client can't be found,
  * the request is passed on to let another
@@ -133,8 +134,10 @@ function createBasicApp(config) {
  */
 
 function ensureClientEnabled(req, res, next) {
+  const clientId = req.params.clientId;
   const bearerToken = req.query.token;
   const clientCredentials = basicAuth(req);
+
   const handleClient = clientid => {
     return req.app
       .get('stores')
@@ -149,7 +152,9 @@ function ensureClientEnabled(req, res, next) {
       })
       .catch(() => next());
   };
-  if (bearerToken) {
+  if (clientId) {
+    return handleClient(clientId);
+  } else if (bearerToken) {
     return req.app
       .get('stores')
       .tokenStore.getAccessToken(bearerToken)
@@ -166,9 +171,7 @@ function ensureClientEnabled(req, res, next) {
 export function createConfigurationApp(config) {
   const app = createBasicApp(config);
 
-  app.use('/configuration', ensureClientEnabled);
-
-  app.get('/configuration', (req, res, next) => {
+  app.get('/configuration', ensureClientEnabled, (req, res, next) => {
     const bearerToken = req.query.token;
 
     res.logData.token = bearerToken;
@@ -327,8 +330,7 @@ export function createOAuthApp(config = {}) {
 
     next();
   });
-  app.use('/oauth/token', ensureClientEnabled);
-  app.post('/oauth/token', app.oauth.grant());
+  app.post('/oauth/token', ensureClientEnabled, app.oauth.grant());
   app.delete('/oauth/token/:token', handleRevokeToken);
   app.delete('/oauth/tokens', handleRevokeTokensForUser);
   app.use(app.oauth.errorHandler());
@@ -478,23 +480,25 @@ export function createAdminApp(config = {}) {
           res.json({err: err});
         });
     });
-  clientEndpoint.route('/token/:clientId').post((req, res, next) => {
-    if (req.body.username === userEncode(null, null)) {
-      if (typeof config.defaultLibraryId === 'undefined') {
-        log.error('No default library id. Set config.defaultLibraryId');
-      } else {
-        req.body.username += config.defaultLibraryId;
-        if (req.body.password === userEncode(null, null)) {
-          req.body.password += config.defaultLibraryId;
+  clientEndpoint
+    .route('/token/:clientId')
+    .post(ensureClientEnabled, (req, res, next) => {
+      if (req.body.username === userEncode(null, null)) {
+        if (typeof config.defaultLibraryId === 'undefined') {
+          log.error('No default library id. Set config.defaultLibraryId');
+        } else {
+          req.body.username += config.defaultLibraryId;
+          if (req.body.password === userEncode(null, null)) {
+            req.body.password += config.defaultLibraryId;
+          }
         }
       }
-    }
-    if (typeof req.body.username !== 'undefined') {
-      adminGrant(app, req, res, next);
-    } else {
-      next();
-    }
-  });
+      if (typeof req.body.username !== 'undefined') {
+        adminGrant(app, req, res, next);
+      } else {
+        next();
+      }
+    });
 
   configEndpoint.route('/').get((req, res) => {
     const config = Object.assign({}, app.get('config'));
