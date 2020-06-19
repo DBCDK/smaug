@@ -52,7 +52,11 @@ function createBasicApp(config) {
             remoteAddress: req.ip
           },
           response: {status: res.statusCode},
-          time: {start: timeStart, end: timeEnd, taken: timeEnd.diff(timeStart)}
+          time: {
+            start: timeStart,
+            end: timeEnd,
+            taken: timeEnd.diff(timeStart)
+          }
         })
       );
     });
@@ -116,10 +120,58 @@ function createBasicApp(config) {
   return app;
 }
 
+/*
+ * Middleware that rejects the request
+ * if client is disabled.
+ *
+ * It will look up the client based on either
+ * clientId given as param, a token,
+ * or client credentials in the request.
+ *
+ * Note that if the client can't be found,
+ * the request is passed on to let another
+ * middleware handle the invalid request
+ */
+
+function ensureClientEnabled(req, res, next) {
+  const clientId = req.params.clientId;
+  const bearerToken = req.query.token;
+  const clientCredentials = basicAuth(req);
+
+  const handleClient = clientid => {
+    return req.app
+      .get('stores')
+      .clientStore.get(clientid)
+      .then(client => {
+        if (client.enabled === false) {
+          return res
+            .status(403)
+            .json({error_description: 'Client is disabled'});
+        }
+        next();
+      })
+      .catch(() => next());
+  };
+  if (clientId) {
+    return handleClient(clientId);
+  } else if (bearerToken) {
+    return req.app
+      .get('stores')
+      .tokenStore.getAccessToken(bearerToken)
+      .then(tokenInfo => handleClient(tokenInfo.clientId))
+      .catch(() => {
+        next();
+      });
+  } else if (clientCredentials) {
+    return handleClient(clientCredentials.name);
+  }
+  next();
+}
+
 export function createConfigurationApp(config) {
   const app = createBasicApp(config);
 
-  app.get('/configuration', (req, res, next) => {
+  app.get('/configuration', ensureClientEnabled, (req, res, next) => {
     const bearerToken = req.query.token;
 
     res.logData.token = bearerToken;
@@ -162,7 +214,9 @@ export function createConfigurationApp(config) {
                     );
                   }
 
-                  const insecureUser = Object.assign({}, user, {pin: redisRes});
+                  const insecureUser = Object.assign({}, user, {
+                    pin: redisRes
+                  });
                   res.json(Object.assign({}, userConfig, {user: insecureUser}));
                 }
               );
@@ -276,7 +330,7 @@ export function createOAuthApp(config = {}) {
 
     next();
   });
-  app.post('/oauth/token', app.oauth.grant());
+  app.post('/oauth/token', ensureClientEnabled, app.oauth.grant());
   app.delete('/oauth/token/:token', handleRevokeToken);
   app.delete('/oauth/tokens', handleRevokeTokensForUser);
   app.use(app.oauth.errorHandler());
@@ -363,7 +417,8 @@ export function createAdminApp(config = {}) {
       const client = {
         name: req.body.name,
         config: req.body.config,
-        contact: req.body.contact
+        contact: req.body.contact,
+        enabled: req.body.enabled
       };
 
       app
@@ -397,12 +452,11 @@ export function createAdminApp(config = {}) {
       const clientId = req.params.clientId;
       const client = {};
 
-      ['name', 'config', 'contact'].forEach(field => {
-        if (req.body[field]) {
+      ['name', 'config', 'contact', 'enabled'].forEach(field => {
+        if (typeof req.body[field] !== 'undefined') {
           client[field] = req.body[field];
         }
       });
-
       app
         .get('stores')
         .clientStore.update(clientId, client)
@@ -426,23 +480,25 @@ export function createAdminApp(config = {}) {
           res.json({err: err});
         });
     });
-  clientEndpoint.route('/token/:clientId').post((req, res, next) => {
-    if (req.body.username === userEncode(null, null)) {
-      if (typeof config.defaultLibraryId === 'undefined') {
-        log.error('No default library id. Set config.defaultLibraryId');
-      } else {
-        req.body.username += config.defaultLibraryId;
-        if (req.body.password === userEncode(null, null)) {
-          req.body.password += config.defaultLibraryId;
+  clientEndpoint
+    .route('/token/:clientId')
+    .post(ensureClientEnabled, (req, res, next) => {
+      if (req.body.username === userEncode(null, null)) {
+        if (typeof config.defaultLibraryId === 'undefined') {
+          log.error('No default library id. Set config.defaultLibraryId');
+        } else {
+          req.body.username += config.defaultLibraryId;
+          if (req.body.password === userEncode(null, null)) {
+            req.body.password += config.defaultLibraryId;
+          }
         }
       }
-    }
-    if (typeof req.body.username !== 'undefined') {
-      adminGrant(app, req, res, next);
-    } else {
-      next();
-    }
-  });
+      if (typeof req.body.username !== 'undefined') {
+        adminGrant(app, req, res, next);
+      } else {
+        next();
+      }
+    });
 
   configEndpoint.route('/').get((req, res) => {
     const config = Object.assign({}, app.get('config'));

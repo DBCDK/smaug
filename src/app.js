@@ -7,11 +7,12 @@ import {
   createOAuthApp,
   createConfigurationApp
 } from './expressapp';
-import models from './models';
+import models, {migrate} from './models';
 import config from './config/config';
 
 if (config.datasources && config.datasources.postgres.uri) {
   config.datasources.postgres.models = models(config.datasources.postgres);
+  migrate(config.datasources.postgres.models.sequelize);
 }
 
 if (config.datasources && config.datasources.redis.uri) {

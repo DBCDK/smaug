@@ -3,7 +3,30 @@
 import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
+import Umzug from 'umzug';
 import {log} from '../utils';
+
+export async function migrate(sequelize) {
+  try {
+    const umzug = new Umzug({
+      storage: 'sequelize',
+
+      storageOptions: {
+        sequelize: sequelize
+      },
+
+      migrations: {
+        params: [sequelize.getQueryInterface(), Sequelize],
+        path: path.join(__dirname, '../migrations')
+      }
+    });
+
+    await umzug.up();
+    log.info('Migrated database');
+  } catch (e) {
+    log.error('Failed to migrate database');
+  }
+}
 
 export default function models(config = {}) {
   const basename = path.basename(module.filename);

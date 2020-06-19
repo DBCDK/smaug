@@ -37,3 +37,17 @@ Cypress.Commands.add('createClient', client => {
     })
     .then(({body}) => body);
 });
+
+Cypress.Commands.add('updateClient', (clientId, client) => {
+  return cy
+    .request({
+      url: `${Cypress.env('adminUrl')}/clients/${clientId}`,
+      method: 'PUT',
+      auth: {
+        user: 'admin',
+        pass: 'admin'
+      },
+      body: client
+    })
+    .then(({body}) => body);
+});

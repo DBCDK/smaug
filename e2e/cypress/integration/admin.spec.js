@@ -6,7 +6,8 @@ describe('Test admin application', () => {
   const client = {
     name: 'a-client',
     config: {},
-    contact: {owner: {name: '', phone: '', email: ''}}
+    contact: {owner: {name: '', phone: '', email: ''}},
+    enabled: true
   };
 
   const request = (method, endpoint, body) =>
@@ -95,9 +96,14 @@ describe('Test admin application', () => {
       addClient(client)
         .its('body')
         .then(res => {
-          getClient(res.id)
-            .its('name')
-            .should('equal', res.name);
+          getClient(res.id).then(clientRes => {
+            cy.wrap(clientRes)
+              .its('name')
+              .should('equal', res.name);
+            cy.wrap(clientRes)
+              .its('enabled')
+              .should('equal', true);
+          });
         });
     });
 
@@ -105,11 +111,18 @@ describe('Test admin application', () => {
       addClient(client)
         .its('body')
         .then(res => {
-          const updatedClient = {...client, name: 'an updated client'};
+          const updatedClient = {
+            ...client,
+            name: 'an updated client',
+            enabled: false
+          };
           updateClient(res.id, updatedClient);
           getClient(res.id)
             .its('name')
             .should('equal', updatedClient.name);
+          getClient(res.id)
+            .its('enabled')
+            .should('equal', false);
         });
     });
 
@@ -182,6 +195,20 @@ describe('Test admin application', () => {
               'access_token',
               'expires_in'
             );
+        });
+    });
+    it('Should fail to provide token when client is disabled', () => {
+      addClient({...client, enabled: false})
+        .its('body')
+        .then(res => {
+          getToken(res, {username: '@', password: '@'}).then(res => {
+            cy.wrap(res)
+              .its('status')
+              .should('equal', 403);
+            cy.wrap(res)
+              .its('body.error_description')
+              .should('equal', 'Client is disabled');
+          });
         });
     });
   });
