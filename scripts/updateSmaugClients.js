@@ -16,18 +16,23 @@ const option = getOptions();
 const smaugObject = JSON.parse(option.smaugObject);
 const id = smaugObject.id;
 
-var updateObjectKey = "urls";
-var updateObjectContent = option.urls;
+// var updateObjectKey = "urls";
+// var updateObjectContent = option.urls;
+
+//Fix spelling error in singleLogoutPath
+if (smaugObject.config.singleLogoutPath === "/adgangsplaformen/logout/iframe") {
+  smaugObject.config.singleLogoutPath = "/adgangsplatformen/logout/iframe";
+}
 
 // Always insert updateObjectKey. Overwrite current content.
 // smaugObject["config"][updateObjectKey] = updateObjectContent;
 
 // Only insert updateObjectKey if it is not in the config file
-if (!smaugObject["config"][updateObjectKey]) {
-  smaugObject["config"][updateObjectKey] = {"host": updateObjectContent, "returnUrl": "/"};
-} else {
-  console.log("echo " + updateObjectKey + " is already set for id: " + id + ". Contains: " + smaugObject.config[updateObjectKey]);
-}
+// if (!smaugObject["config"][updateObjectKey]) {
+//   smaugObject["config"][updateObjectKey] = {"host": updateObjectContent, "returnUrl": "/"};
+// } else {
+//   console.log("echo " + updateObjectKey + " is already set for id: " + id + ". Contains: " + smaugObject.config[updateObjectKey]);
+// }
 
 
 const curlLine = "curl -X PUT -H \"Content-Type: application/json\" --user " + option.smaugUserPwd + " " +  option.smaugAdminUrl + "/clients/" + id + " -d '{\"config\":" + JSON.stringify(smaugObject.config) + "}'";
@@ -42,7 +47,7 @@ console.log(curlLine);
 function getOptions() {
   const ops = stdio.getopt({
     smaugObject:{key: 'o', args: 1, description: 'smaug object'},
-    urls:{key: 'u', args: 1, description: 'urls'},
+    // urls:{key: 'u', args: 1, description: 'urls'},
     smaugUserPwd: {key: 'p', args: 1, description: 'smaug admin user:password'},
     smaugAdminUrl: {key: 's', args: 1, description: 'smaug admin endpoint, ex: https://auth-admin-stg.dbc.dk'}
   });
