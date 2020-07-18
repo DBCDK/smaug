@@ -42,7 +42,7 @@
     "dbc-node-borchk": "^2.0.1",
     "express": "^4.17.1",
     "http-errors": "^1.4.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "nock": "^11.4.0",
     "moment": "^2.12.0",
     "node-cache": "^3.2.1",
