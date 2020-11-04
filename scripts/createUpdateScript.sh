@@ -24,13 +24,9 @@ for id in $ids
 do
     echo "echo update client data for id: $id"
     smaugObject=$(curl -X GET --user $smaugUserPwd $smaugAdminUrl/clients/${id} 2>/dev/null)
-#    urls=$(cat $dataFile | grep $id | cut -d "," -f1)
-#    count=$(echo $urls | wc -c)
     count=2
-    #echo count: $count
     if [ $count -gt 1 ]
     then
-#        echo $id - $urls
         ./updateSmaugClients.js -o "$smaugObject" -p $smaugUserPwd -s $smaugAdminUrl #-u "$urls"
     fi
 done
