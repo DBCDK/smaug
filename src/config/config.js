@@ -100,8 +100,7 @@ const config = {
           suggestsubject: 'http://xptest.dbc.dk/ms/entity-suggest/v1/subject',
           suggest:
             'http://ortograf-service-1-0.mi-prod.svc.cloud.dbc.dk/ortograf/',
-          recommend:
-            'http://recomole-1-0.mi-prod.svc.cloud.dbc.dk/recomole/loan-cosim',
+          recommend: 'http://booklens-190101-1-0.mi-prod.svc.cloud.dbc.dk/',
           performance: 'https://elk.dbc.dk:9100/k8s-frontend-prod-*/',
           recommendurls: {
             default: 'https://xptest.dbc.dk/ms/recommend-cosim/v1',
