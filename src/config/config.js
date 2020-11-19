@@ -101,6 +101,8 @@ const config = {
           suggest:
             'http://ortograf-service-1-0.mi-prod.svc.cloud.dbc.dk/ortograf/',
           recommend: 'http://booklens-190101-1-0.mi-prod.svc.cloud.dbc.dk/',
+          workpresentation:
+            'http://work-presentation-service.cisterne.svc.cloud.dbc.dk/api/work-presentation',
           performance: 'https://elk.dbc.dk:9100/k8s-frontend-prod-*/',
           recommendurls: {
             default: 'https://xptest.dbc.dk/ms/recommend-cosim/v1',
