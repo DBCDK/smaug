@@ -84,7 +84,7 @@ const config = {
           cicero: 'https://cicero-fbs.com/rest/external/v1/',
           ddbcmsapi: 'https://cmscontent.dbc.dk/',
           moreinfo: 'https://moreinfo.addi.dk/2.11/',
-          openagency: 'https://openagency.addi.dk/2.34/',
+          openagency: 'http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api',
           openholdingstatus: 'https://openholdingstatus.addi.dk/3.1/',
           openformat:
             'http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php',
