@@ -89,7 +89,7 @@ const config = {
           openformat:
             'http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php',
           holdingsitems:
-            'http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/holdings-items-content-service/api',
+            'http://holdings-items-content-service.cisterne.svc.cloud.dbc.dk/api',
           openorder: 'https://openorder.addi.dk/3.0',
           opensearch: 'https://opensearch.addi.dk/b3.5_5.2/',
           openuserstatus: 'https://openuserstatus.addi.dk/2.0/',
