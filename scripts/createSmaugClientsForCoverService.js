@@ -42,11 +42,11 @@ data.forEach(x => {
     covSkole.config.agencyId = x.config.agencyId;
     covBib.contact = x.contact;
     covSkole.contact = x.contact;
-    curlLine = "curl -X PUT -H \"Content-Type: application/json\" --user " + option.smaugUserPwd + " " +
-      option.smaugAdminUrl + "/clients -d '" + JSON.stringify(covBib) + "}'";
+    curlLine = "curl -X POST -H \"Content-Type: application/json\" --user " + option.smaugUserPwd + " " +
+      option.smaugAdminUrl + "/clients -d '" + JSON.stringify(covBib) + "'";
     console.log(curlLine);
-    curlLine = "curl -X PUT -H \"Content-Type: application/json\" --user " + option.smaugUserPwd + " " +
-      option.smaugAdminUrl + "/clients -d '" + JSON.stringify(covSkole) + "}'";
+    curlLine = "curl -X POST -H \"Content-Type: application/json\" --user " + option.smaugUserPwd + " " +
+      option.smaugAdminUrl + "/clients -d '" + JSON.stringify(covSkole) + "'";
     console.log(curlLine);
   }
 });
