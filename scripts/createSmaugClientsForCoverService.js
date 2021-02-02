@@ -2,7 +2,7 @@
 /**
  * @file
  *
- * Fetch library info using openAgency webservice findLibrary endpoint and produce a shell script to load them into smaug
+ * Fetch library info using smaug client endpoint and produce a shell script to load them into smaug
  *
  * run something like: ./createSmaugClientsForCoverService.js -s https://auth-admin-stg.dbc.dk/clients -p admin:password -i relative/path/to/inputfile.json
  *
@@ -16,7 +16,7 @@ const option = getOptions();
 
 
 console.log("#!/usr/bin/env bash");
-let data = JSON.parse(fs.readFileSync(pth.join(__dirname, option.inputfile)));
+const data = JSON.parse(fs.readFileSync(pth.join(__dirname, option.inputfile)));
 data.forEach(x => {
   let curlLine;
   const covBib = {config:{}};
