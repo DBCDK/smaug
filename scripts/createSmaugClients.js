@@ -2,7 +2,7 @@
 /**
  * @file
  *
- * Fetch library info using openAgency webservice findLibrary endpoint and produce a sheel script to load them into smaug
+ * Fetch library info using openAgency webservice findLibrary endpoint and produce a shell script to load them into smaug
  *
  * run something like: ./createSmaugClients.js -w http://openagency.addi.dk/2.34 -s https://auth-admin-stg.dbc.dk -p admin:password -o loadSmaug.sh
  *
