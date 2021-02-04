@@ -2,9 +2,9 @@
 /**
  * @file
  *
- * Fetch library info using openAgency webservice findLibrary endpoint
+ * Fetch library info using vipCore webservice findLibrary endpoint
  *
- * run something like: ./fetchLibraries -w http://openagency.addi.dk/2.34 -o myLibraryFile.json
+ * run something like: ./fetchLibraries -w http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api -o myLibraryFile.json
  *
  */
 
@@ -15,30 +15,31 @@ const stdio = require('stdio');
 const selectField = ['agencyId', 'agencyName', 'postalCode', 'city', 'agencyEmail'];
 const option = getOptions();
 
-request(
-  {
-    uri: option.openAgency,
-    qs: {action: 'findLibrary', pickupAllowed: '1', outputType: 'json', libraryType: 'Folkebibliotek'}
-  },
-  function (error, response) {
+request({
+    method: 'POST',
+    url: option.vipCore.replace(/\/$/, '') + '/findlibrary',
+    headers: {'Content-Type': 'application/json'},
+    body: {pickupAllowed: 'true', libraryType: 'Folkebibliotek'},
+    json: true
+  }, function (error, response) {
     if (response.statusCode !== 200) {
       console.log('error status', response.statusCode);
       console.log('error', error);
       process.exit(1);
     }
 
-    const body = JSON.parse(response.body);
-    if (!body.findLibraryResponse.pickupAgency) {
+    const body = response.body;
+    if (!body.pickupAgency) {
       console.log('No libraries found - perhaps a hickup?');
       process.exit(1);
     }
 
     const result = [];
-    body.findLibraryResponse.pickupAgency.forEach(agency => {
-      if (agency.branchType.$ === 'H') {
+    body.pickupAgency.forEach(agency => {
+      if (agency.branchType === 'H') {
         const item = {};
         selectField.forEach(a => {
-          item[a] = agency[a] ? agency[a].$ : '';
+          item[a] = agency[a] ? agency[a] : '';
         });
         result.push(item);
       }
@@ -59,10 +60,10 @@ request(
  */
 function getOptions() {
   const ops = stdio.getopt({
-    openAgency: {key: 'w', args: 1, description: 'openAgency endpoint'},
+    vipCore: {key: 'w', args: 1, description: 'vipCore endpoint'},
     output: {key: 'o', args: 1, description: 'Output file'}
   });
-  if (!ops.openAgency || !ops.output) {
+  if (!ops.vipCore || !ops.output) {
     ops.printHelp();
     process.exit(1);
   }
