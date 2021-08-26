@@ -163,6 +163,7 @@ describe('Oauth flow', () => {
         .its('body')
         .then(res => {
           getConfiguration(res.access_token)
+            .then(clientRes => console.log(clientRes))
             .its('body')
             .should(
               'contain.keys',
