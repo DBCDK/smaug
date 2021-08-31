@@ -16,7 +16,7 @@ describe('borchk', function() {
     userStore = new UserStore(
       {},
       {
-        wsdl: 'https://borchk.addi.dk/2.5/?wsdl',
+        wsdl: 'https://borchk.addi.dk/3.0/soap?wsdl',
         serviceRequester: 'bibliotek.dk'
       }
     );
