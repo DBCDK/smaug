@@ -1,7 +1,7 @@
 import nock from 'nock';
 
 // include next line to get live data from the call
-// nock.recorder.rec();
+nock.recorder.rec();
 
 nock('https://borchk.addi.dk:443', {encodedQueryParams: true})
   .persist()
