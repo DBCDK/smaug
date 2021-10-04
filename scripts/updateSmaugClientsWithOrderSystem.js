@@ -2,7 +2,7 @@
 /**
  * @file
  *
- * Recieves a smaug object as a string, retrieves config part and adds a new key to that part.
+ * Receives a smaug object as a string, retrieves config part and adds a new key to that part.
  * Then creates a curl string that can be used to update that id in smaug.
  * Created together with createUpdateScript.sh that calls this script
  * Should you run it from a bash it is done like this:
@@ -16,7 +16,8 @@ const smaugObject = JSON.parse(option.smaugObject);
 const id = smaugObject.id;
 
 console.log("echo displayName: ", smaugObject["config"]["displayName"]);
-//Add DD CMS as label to all clients in this batch:
+
+//Add DDB CMS as label to all clients in this batch:
 smaugObject["config"]["label"] = "DDB CMS";
 
 // Only add moreinfo access if it is not in the config file
@@ -25,7 +26,7 @@ if (smaugObject["config"]["orderSystem"]) {
     console.log("echo " + id + " has allready ordersystem set as 'ddbcms'")
     return "";
   } else {
-    smaugObject["config"]["orderSystem"] = "ddbcms";
+    console.log("echo orderSystem allready set to: ", smaugObject["config"]["orderSystem"]);
   }
 } else {
   smaugObject["config"]["orderSystem"] = "ddbcms";
