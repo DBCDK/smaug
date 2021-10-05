@@ -6,8 +6,8 @@
 if [ $# -lt 4 ]
 then
     echo 'Please call this script with 4 parameters. Examples:'
-    echo './createUpdateScript.sh "user:password" "https://auth-admin-stg.dbc.dk" updateSmaugClientsWithOrderSystem.js ~/indata/smaug-id-libraries'
-    echo './createUpdateScript.sh "user:password" "https://auth-admin.dbc.dk" updateSmaugClientsWithOrderSystem.js ~/indata/smaug-id-libraries '
+    echo './createUpdateScriptFromIdList.sh "user:password" "https://auth-admin-stg.dbc.dk" updateSmaugClientsWithOrderSystem.js ~/indata/smaug-id-libraries'
+    echo './createUpdateScriptFromIdList.sh "user:password" "https://auth-admin.dbc.dk" updateSmaugClientsWithOrderSystem.js ~/indata/smaug-id-libraries '
     exit 1
 fi
 
