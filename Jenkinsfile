@@ -16,7 +16,7 @@ def DOCKER_STATUS = ''
 def GITLAB_ID = "380"
 pipeline {
     agent {
-        label 'devel9-head'
+        label 'devel10-head'
     }
     environment {
 		GITLAB_PRIVATE_TOKEN = credentials("metascrum-gitlab-api-token")
