@@ -1,4 +1,4 @@
-ARG NODE_BASEIMAGE=docker.dbc.dk/dbc-node:old-2021-08-23
+ARG NODE_BASEIMAGE=docker.dbc.dk/dbc-node:latest
 # ---- Base Node ----
 FROM  $NODE_BASEIMAGE AS build
 # set working directory
