@@ -100,7 +100,7 @@ const config = {
           suggestsubject: 'http://xptest.dbc.dk/ms/entity-suggest/v1/subject',
           suggest:
             'http://ortograf-service-1-0.mi-prod.svc.cloud.dbc.dk/ortograf/',
-          recommend: 'http://booklens-190101-1-0.mi-prod.svc.cloud.dbc.dk/',
+          recommend: 'http://booklens-1-1.mi-prod.svc.cloud.dbc.dk/',
           workpresentation:
             'http://work-presentation-service.cisterne.svc.cloud.dbc.dk/api/work-presentation',
           performance: 'https://elk.dbc.dk:9100/k8s-frontend-prod-*/',
