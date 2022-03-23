@@ -63,8 +63,8 @@ export async function getAccountsByGlobalId({userIdValue}) {
   }
   const params = {
     userCredentials: {
-      userIdType: 'CPR',
-      userIdValue: userIdValue
+      uidType: 'CPR',
+      uidValue: userIdValue
     },
     authCredentials: CULR_AUTH_CREDENTIALS
   };
