@@ -44,7 +44,7 @@
     "http-errors": "^1.4.0",
     "lodash": "^4.17.15",
     "nock": "^11.4.0",
-    "moment": "^2.12.0",
+    "moment": "^2.29.4",
     "node-cache": "^3.2.1",
     "oauth2-server": "^2.4.1",
     "pg": "^8.7.1",
