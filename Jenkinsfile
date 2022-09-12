@@ -9,7 +9,7 @@ properties([
 def PRODUCT = "smaug"
 def CONTAINER_NAME = "${PRODUCT}-${BRANCH_NAME.toLowerCase()}"
 def BUILD_NAME = "$PRODUCT :: $BRANCH_NAME"
-def DOCKER_REPO = "docker-ux.dbc.dk"
+def DOCKER_REPO = "docker-fbiscrum.artifacts.dbccloud.dk"
 def DOCKER_NAME = "${DOCKER_REPO}/${CONTAINER_NAME}:${BUILD_NUMBER}"
 def DOCKER_COMPOSE_NAME = "compose-${DOCKER_NAME}"
 def DOCKER_STATUS = ''
@@ -47,14 +47,7 @@ pipeline {
             steps {
                 script {
                     if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
-                        def ARTY_SERVER = Artifactory.server 'arty'
-                        def ARTY_DOCKER = Artifactory.docker server: ARTY_SERVER, host: env.DOCKER_HOST
-                        def BUILD_INFO = Artifactory.newBuildInfo()
-                        BUILD_INFO.name = BUILD_NAME
-                        BUILD_INFO.env.capture = true
-                        BUILD_INFO.env.collect()
-                        BUILD_INFO = ARTY_DOCKER.push("$DOCKER_NAME", 'docker-ux', BUILD_INFO)
-                        ARTY_SERVER.publishBuildInfo BUILD_INFO
+                        docker.image("${DOCKER_NAME}").push("${BUILD_NUMBER}")
                     }
                 }
             }
