@@ -40,7 +40,7 @@
     "basic-auth": "^1.0.3",
     "body-parser": "^1.14.1",
     "dbc-node-borchk": "^2.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "http-errors": "^1.4.0",
     "lodash": "^4.17.15",
     "nock": "^11.4.0",
