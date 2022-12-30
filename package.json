@@ -63,7 +63,7 @@
     "chance": "^1.0.0",
     "dotenv": "^8.0.0",
     "eslint": "^4.19.1",
-    "mocha": "^7.1.2",
+    "mocha": "^10.2.0",
     "nodemon": "^2.0.3",
     "prettier": "^1.17.0",
     "sequelize-fixtures": "^1.0.2",
