@@ -64,7 +64,7 @@
     "dotenv": "^8.0.0",
     "eslint": "^4.19.1",
     "mocha": "^7.1.2",
-    "nodemon": "^2.0.3",
+    "nodemon": "^2.0.20",
     "prettier": "^1.17.0",
     "sequelize-fixtures": "^1.0.2",
     "sinon": "^1.17.3",
