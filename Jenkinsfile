@@ -47,7 +47,9 @@ pipeline {
             steps {
                 script {
                     if (currentBuild.resultIsBetterOrEqualTo('SUCCESS')) {
-                        docker.image("${DOCKER_NAME}").push("${BUILD_NUMBER}")
+                        docker.withRegistry('https://docker-fbiscrum.artifacts.dbccloud.dk', 'docker') {
+                            docker.image("${DOCKER_NAME}").push("${BUILD_NUMBER}")
+                        }
                     }
                 }
             }
