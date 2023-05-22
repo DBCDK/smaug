@@ -15,8 +15,8 @@
     "start": "node src/main.js",
     "test": "LOG_LEVEL=off mocha --require babel-core/register --recursive src/**/__tests__/* --exit",
     "test:verbose": "LOG_LEVEL=debug mocha --require babel-core/register --recursive src/**/__tests__/*",
-    "cy:run": "npx cypress run --project ./e2e",
-    "cy:open": "npx cypress@latest open --project ./e2e"
+    "cy:run": "npx cypress@8 run --project ./e2e",
+    "cy:open": "npx cypress@8 open --project ./e2e"
   },
   "repository": {
     "type": "git",
@@ -49,7 +49,7 @@
     "oauth2-server": "^2.4.1",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.2",
-    "redis": "^2.0.0",
+    "ioredis": "^4.28.0",
     "sequelize": "^5.21.3",
     "sequelize-cli": "^5.5.0",
     "soap": "^0.27.1",

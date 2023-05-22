@@ -1,6 +1,6 @@
 'use strict';
 
-import redis from 'redis';
+import Redis from 'ioredis';
 
 /**
  * @file Register and throttleRequest suspicious requests.
@@ -8,7 +8,7 @@ import redis from 'redis';
 
 class Throttler {
   constructor() {
-    this.redisClient = redis.createClient();
+    this.redisClient = new Redis();
   }
 
   /**
