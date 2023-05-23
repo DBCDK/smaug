@@ -86,6 +86,7 @@ const config = {
           moreinfo: 'https://moreinfo.addi.dk/2.11/',
           openagency: 'http://vipcore.iscrum-vip-prod.svc.cloud.dbc.dk/1.0/api',
           openholdingstatus: 'https://openholdingstatus.addi.dk/3.1/',
+          holdingsservice: 'http://holdings-service.cisterne.svc.cloud.dbc.dk/api/v1/holdings-status/holdings',
           openformat:
             'http://openformat-php-master.frontend-prod.svc.cloud.dbc.dk/server.php',
           holdingsitems:
