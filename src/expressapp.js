@@ -136,7 +136,7 @@ function createBasicApp(config) {
 
 function ensureClientEnabled(req, res, next) {
   const clientId = req.params.clientId;
-  const bearerToken = req.query.token;
+  const bearerToken = getTokenAsString(req.query.token);
   const clientCredentials = basicAuth(req);
 
   const handleClient = clientid => {
@@ -169,12 +169,20 @@ function ensureClientEnabled(req, res, next) {
   next();
 }
 
+/** If more than one token is set, use the first and ignore the rest
+ *
+ * @param token
+ * @returns {unknown}
+ */
+function getTokenAsString(token) {
+    return (typeof token === 'object') ? Object.values(token)[0] : token;
+}
+
 export function createConfigurationApp(config) {
   const app = createBasicApp(config);
 
   app.get('/configuration', ensureClientEnabled, (req, res, next) => {
-    const bearerToken = req.query.token;
-
+    const bearerToken = getTokenAsString(req.query.token);
     res.logData.token = bearerToken;
 
     app
