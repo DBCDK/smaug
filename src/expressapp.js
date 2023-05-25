@@ -16,6 +16,11 @@ import adminGrant from './oauth/adminGrant';
 import * as culr from './lib/culr/culr.client';
 import {userEncode, userDecode} from './utils';
 
+/**
+ *
+ * @param config
+ * @returns {Express}
+ */
 function createBasicApp(config) {
   culr.setConfig(config);
   var app = express();
@@ -172,12 +177,17 @@ function ensureClientEnabled(req, res, next) {
 /** If more than one token is set, use the first and ignore the rest
  *
  * @param token
- * @returns {unknown}
+ * @returns {string}
  */
 function getTokenAsString(token) {
     return (typeof token === 'object') ? Object.values(token)[0] : token;
 }
 
+/**
+ *
+ * @param config
+ * @returns {Express}
+ */
 export function createConfigurationApp(config) {
   const app = createBasicApp(config);
 
@@ -264,6 +274,12 @@ export function createConfigurationApp(config) {
   return app;
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function handleRevokeToken(req, res, next) {
   const token = req.params.token;
   res.logData.token = token;
@@ -275,6 +291,12 @@ function handleRevokeToken(req, res, next) {
     .catch(error => next(new Error(error)));
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 function handleRevokeTokensForUser(req, res, next) {
   const tokenStore = req.app.get('stores').tokenStore;
   const token = req.query.token;
@@ -289,6 +311,11 @@ function handleRevokeTokensForUser(req, res, next) {
     .catch(error => next(new Error(error)));
 }
 
+/**
+ *
+ * @param config
+ * @returns {Express}
+ */
 export function createOAuthApp(config = {}) {
   var app = createBasicApp(config);
 
@@ -347,6 +374,11 @@ export function createOAuthApp(config = {}) {
   return app;
 }
 
+/**
+ *
+ * @param config
+ * @returns {Express}
+ */
 export function createApp(config = {}) {
   const app = express();
   app.disable('x-powered-by');
@@ -357,20 +389,41 @@ export function createApp(config = {}) {
   return app;
 }
 
+/**
+ *
+ * @param client
+ * @returns {*}
+ */
 export function filterClient(client) {
   const filteredClient = Object.assign({}, client);
   delete filteredClient.secret;
   return filteredClient;
 }
 
+/**
+ *
+ * @param clients
+ * @returns {*}
+ */
 export function filterClients(clients) {
   return clients.map(filterClient);
 }
 
+/**
+ *
+ * @param client
+ * @param id
+ * @returns {any}
+ */
 export function clientWithId(client, id) {
   return Object.assign({}, client, {id: id});
 }
 
+/**
+ *
+ * @param config
+ * @returns {Express}
+ */
 export function createAdminApp(config = {}) {
   const app = createBasicApp(config);
   app.oauth = OAuth2Server({
