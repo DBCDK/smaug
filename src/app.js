@@ -1,5 +1,6 @@
 'use strict';
-import Redis from 'ioredis';
+//import Redis from 'ioredis';
+import redis from 'redis';
 import {log} from './utils';
 import {
   createApp,
@@ -16,7 +17,7 @@ if (config.datasources && config.datasources.postgres.uri) {
 }
 
 if (config.datasources && config.datasources.redis.uri) {
-  config.datasources.redis.redisClient = new Redis(config.datasources.redis.uri);
+  config.datasources.redis.redisClient = redis.createClient(config.datasources.redis.uri);
 }
 
 if (config.mock_externals.borchk) {
