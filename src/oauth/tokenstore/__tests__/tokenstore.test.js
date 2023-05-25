@@ -4,7 +4,8 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Chance from 'chance';
 import moment from 'moment';
-import Redis from 'ioredis';
+import redis from 'redis';
+//import Redis from 'ioredis';
 import uuid from 'uuid';
 
 import InmemoryTokenStore from '../inmemory';
@@ -28,7 +29,7 @@ if (process.env.REDIS) {
   backends.redis = () => {
     return new RedisTokenStore(
       {},
-      {backend: {redisClient: new Redis()}}
+      {backend: {redisClient: redis.createClient()}}
     );
   };
 }

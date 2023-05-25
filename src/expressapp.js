@@ -5,7 +5,8 @@ import createError from 'http-errors';
 import OAuth2Server from 'oauth2-server';
 import bodyParser from 'body-parser';
 import basicAuth from 'basic-auth';
-import Redis from 'ioredis';
+import redis from 'redis';
+//import Redis from 'ioredis';
 import moment from 'moment';
 import _ from 'lodash';
 import url from 'url';
@@ -24,10 +25,9 @@ function createBasicApp(config) {
   if (storePasswordsInRedis.uri) {
     app.set(
       'storePasswordsInRedisClient',
-      new Redis(
-        storePasswordsInRedis.uri,
-        {keyPrefix: storePasswordsInRedis.prefix || 'user:'}
-      )
+      redis.createClient(storePasswordsInRedis.uri, {
+          prefix: storePasswordsInRedis.prefix || 'user:'
+      })
     );
   }
 
