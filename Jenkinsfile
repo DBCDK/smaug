@@ -58,7 +58,7 @@ pipeline {
 			agent {
 				docker {
 					label 'devel9-head'
-					image "docker-io.dbc.dk/python3-build-image"
+					image "docker-metascrum.artifacts.dbccloud.dk/python3-build-image"
 					alwaysPull true
 				}
 			}

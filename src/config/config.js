@@ -20,8 +20,8 @@ const config = {
     postgres: {
       uri: process.env.DATABASE_URI
     },
-    redis: {
-      uri: process.env.REDIS
+    redis_cluster: {
+      uri: process.env.REDIS_CLUSTER
     },
     inmemory: {}
   },
@@ -31,8 +31,8 @@ const config = {
     }
   },
 
-  storePasswordsInRedis: {
-    uri: process.env.REDIS,
+  storePasswordsInRedisCluster: {
+    uri: process.env.REDIS_CLUSTER,
     prefix: 'user:'
   },
   defaultLibraryId: process.env.DEFAULT_LIBRARY_ID,
