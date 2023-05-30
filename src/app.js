@@ -1,6 +1,5 @@
 'use strict';
 import Redis from 'ioredis';
-//import redis from 'redis';
 import {log} from './utils';
 import {
   createApp,

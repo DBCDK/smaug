@@ -4,7 +4,6 @@ import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import Chance from 'chance';
 import moment from 'moment';
-//import redis from 'redis';
 import Redis from 'ioredis';
 import uuid from 'uuid';
 

@@ -5,7 +5,6 @@ import createError from 'http-errors';
 import OAuth2Server from 'oauth2-server';
 import bodyParser from 'body-parser';
 import basicAuth from 'basic-auth';
-//import redis from 'redis';
 import Redis from 'ioredis';
 import moment from 'moment';
 import _ from 'lodash';

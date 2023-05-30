@@ -1,6 +1,5 @@
 'use strict';
 
-//import redis from 'redis';
 import Redis from 'ioredis';
 
 /**
