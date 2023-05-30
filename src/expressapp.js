@@ -5,8 +5,7 @@ import createError from 'http-errors';
 import OAuth2Server from 'oauth2-server';
 import bodyParser from 'body-parser';
 import basicAuth from 'basic-auth';
-import redis from 'redis';
-//import Redis from 'ioredis';
+import Redis from 'ioredis';
 import moment from 'moment';
 import _ from 'lodash';
 import url from 'url';
@@ -26,12 +25,12 @@ function createBasicApp(config) {
   var app = express();
   app.set('config', config);
 
-  const {storePasswordsInRedis = {}} = app.get('config');
-  if (storePasswordsInRedis.uri) {
+  const {storePasswordsInRedisCluster = {}} = app.get('config');
+  if (storePasswordsInRedisCluster.uri) {
     app.set(
       'storePasswordsInRedisClient',
-      redis.createClient(storePasswordsInRedis.uri, {
-          prefix: storePasswordsInRedis.prefix || 'user:'
+      new Redis.Cluster([storePasswordsInRedisCluster.uri], {
+        keyPrefix: storePasswordsInRedisCluster.prefix || 'user:'
       })
     );
   }
@@ -569,8 +568,8 @@ export function createAdminApp(config = {}) {
       delete config.datasources.postgres.models;
     }
 
-    if (config.datasources.redis) {
-      delete config.datasources.redis.redisClient;
+    if (config.datasources.redis_cluster) {
+      delete config.datasources.redis_cluster.redisClient;
     }
 
     [

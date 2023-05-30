@@ -1,6 +1,5 @@
 'use strict';
-//import Redis from 'ioredis';
-import redis from 'redis';
+import Redis from 'ioredis';
 import {log} from './utils';
 import {
   createApp,
@@ -16,8 +15,8 @@ if (config.datasources && config.datasources.postgres.uri) {
   migrate(config.datasources.postgres.models.sequelize);
 }
 
-if (config.datasources && config.datasources.redis.uri) {
-  config.datasources.redis.redisClient = redis.createClient(config.datasources.redis.uri);
+if (config.datasources && config.datasources.redis_cluster.uri) {
+  config.datasources.redis_cluster.redisClient = new Redis.Cluster([config.datasources.redis_cluster.uri]);
 }
 
 if (config.mock_externals.borchk) {
