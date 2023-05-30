@@ -17,7 +17,7 @@ if (config.datasources && config.datasources.postgres.uri) {
 }
 
 if (config.datasources && config.datasources.redis_cluster.uri) {
-    config.datasources.redis.redisClient = new Redis.Cluster([config.datasources.redis_cluster.uri]);
+  config.datasources.redis_cluster.redisClient = new Redis.Cluster([config.datasources.redis_cluster.uri]);
 }
 
 if (config.mock_externals.borchk) {

@@ -569,8 +569,8 @@ export function createAdminApp(config = {}) {
       delete config.datasources.postgres.models;
     }
 
-    if (config.datasources.redis) {
-      delete config.datasources.redis.redisClient;
+    if (config.datasources.redis_cluster) {
+      delete config.datasources.redis_cluster.redisClient;
     }
 
     [
