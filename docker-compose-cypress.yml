@@ -2,6 +2,7 @@ version: '3'
 services:
   redis:
     image: redis:5.0.6
+# see comment below about redis
   database:
     image: postgres:9.6
     environment:
@@ -12,7 +13,9 @@ services:
     env_file: ./test/test.env
     environment:
       - DATABASE_URI=postgres://smaug@database/smaug
-      - REDIS=redis://redis
+# the redis above is not at cluster, so the setting from the env_file is used
+# when/if a dbc redis cluster image is made, this setting should be included again
+#      - REDIS_CLUSTER=redis
     depends_on:
       - database
       - redis
